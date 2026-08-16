@@ -1,4 +1,4 @@
-package com.akshay.ipl_crickbuzz.entity;
+package com.akshay.iplcrickbuzz.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
