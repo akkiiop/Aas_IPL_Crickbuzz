@@ -141,6 +141,161 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Valid POST",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"playerId\": 10,\r\n    \"jerseyNumber\": 7,\r\n    \"playerName\": \"MS Dhoni\",\r\n    \"runs\": 5000,\r\n    \"wickets\": 1,\r\n    \"teamName\": \"CSK\",\r\n    \"specialization\": \"Wicket Keeper\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/players",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "players"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Empty name",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"playerId\": 11,\r\n    \"jerseyNumber\": 7,\r\n    \"playerName\": \"\",\r\n    \"runs\": 5000,\r\n    \"wickets\": 1,\r\n    \"teamName\": \"CSK\",\r\n    \"specialization\": \"Batsman\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/players",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "players"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative runs",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"playerId\": 12,\r\n    \"jerseyNumber\": 7,\r\n    \"playerName\": \"Test Player\",\r\n    \"runs\": -500,\r\n    \"wickets\": 1,\r\n    \"teamName\": \"CSK\",\r\n    \"specialization\": \"Wicket Keeper\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/players",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "players"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Player doesn't exist",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/players/999",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "players",
+                "999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Normal GET",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/players",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "players"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }

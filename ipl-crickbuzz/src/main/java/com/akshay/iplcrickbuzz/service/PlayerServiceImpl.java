@@ -1,7 +1,9 @@
 package com.akshay.iplcrickbuzz.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
+
 import com.akshay.iplcrickbuzz.entity.Player;
+import com.akshay.iplcrickbuzz.exception.PlayerNotFoundException;
 import com.akshay.iplcrickbuzz.repository.PlayerRepository;
 
 @Service
@@ -24,7 +26,7 @@ public class PlayerServiceImpl implements PlayerService{
 	 
 	 @Override
 	 public Player getPlayerById(Integer id) {
-		 return playerRepository.findById(id).orElse(null);
+		 return playerRepository.findById(id).orElseThrow(() -> new PlayerNotFoundException("Player not found with id: "+id));
 	 }
 	 
 	 @Override 

@@ -1,5 +1,9 @@
 package com.akshay.iplcrickbuzz.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -8,10 +12,21 @@ public class Player {
 	
 	@Id
 	private int playerId;
+	
+	@Min(value = 1, message = "Jercey number must be at least 1")
+	@Max(value = 999, message = "Jercey number must not exceed 999")
 	private int jerseyNumber;
+	
+	@NotBlank(message = "Player name is required")
 	private String playerName;
+	
+	@Min(value = 0, message = "Runs cannot be negative")
 	private int runs;
+	
+	@Min(value = 0, message = "Wickets cannot be negative")
 	private int wickets;
+	
+	@NotBlank(message = "Team name is required")
 	private String teamName;
 	private String specialization;
 	

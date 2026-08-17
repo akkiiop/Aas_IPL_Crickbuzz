@@ -1,4 +1,6 @@
 package com.akshay.iplcrickbuzz.controller;
+
+import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +35,7 @@ public class PlayerController {
 	
 	
 	@PostMapping
-	public  Player savePlayer(@RequestBody Player player) {
+	public  Player savePlayer(@Valid @RequestBody Player player) {
 		return playerService.savePlayer(player);
 	}
 	
@@ -44,7 +46,7 @@ public class PlayerController {
 	}
 	
 	@PutMapping
-	public Player updatePlayer(@RequestBody Player player) {
+	public Player updatePlayer(@Valid @RequestBody Player player) {
 		return playerService.updatePlayer(player);
 	}
 }
