@@ -5,12 +5,15 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Player {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int playerId;
 	
 	@Min(value = 1, message = "Jercey number must be at least 1")

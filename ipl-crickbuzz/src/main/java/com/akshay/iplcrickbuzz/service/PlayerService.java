@@ -1,10 +1,19 @@
 package com.akshay.iplcrickbuzz.service;
 import java.util.List;
-import com.akshay.iplcrickbuzz.entity.Player;
+
+import com.akshay.iplcrickbuzz.dto.PlayerRequestDTO;
+import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
+
 public interface PlayerService {
-	Player savePlayer(Player player);
-	List<Player> getAllPlayers();
-	Player getPlayerById(Integer id);
-	Player updatePlayer(Player player);
+	PlayerResponseDTO savePlayer(PlayerRequestDTO dto);
+	
+	List<PlayerResponseDTO> getAllPlayers();
+	
+	PlayerResponseDTO getPlayerById(Integer id);
+	
+	
+	
 	void deletePlayer(Integer id);
+
+	PlayerResponseDTO updatePlayer(Integer id, PlayerRequestDTO dto);
 }

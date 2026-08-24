@@ -1,5 +1,7 @@
 package com.akshay.iplcrickbuzz.controller;
 
+import com.akshay.iplcrickbuzz.dto.PlayerRequestDTO;
+import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -11,8 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.akshay.iplcrickbuzz.entity.Player;
 import com.akshay.iplcrickbuzz.service.PlayerService;
 
 @RestController
@@ -24,20 +24,26 @@ public class PlayerController {
 	}
 	
 	@GetMapping
-	public List<Player> getAllPlayers(){
-		return playerService.getAllPlayers();
+	public List<PlayerResponseDTO> getAllPlayers() {
+
+	    return playerService.getAllPlayers();
 	}
 	
 	@GetMapping("/{id}")
-	public Player getPlayerById(@PathVariable Integer id) {
-		return playerService.getPlayerById(id);
+	public PlayerResponseDTO getPlayerById(
+	        @PathVariable Integer id) {
+
+	    return playerService.getPlayerById(id);
 	}
 	
 	
 	@PostMapping
-	public  Player savePlayer(@Valid @RequestBody Player player) {
-		return playerService.savePlayer(player);
+	public PlayerResponseDTO savePlayer(
+	        @Valid @RequestBody PlayerRequestDTO dto) {
+
+	    return playerService.savePlayer(dto);
 	}
+	
 	
 	@DeleteMapping("/{id}")
 	public String deletePlayer(@PathVariable Integer id) {
@@ -45,8 +51,11 @@ public class PlayerController {
 		return "Player deleted Successfully";
 	}
 	
-	@PutMapping
-	public Player updatePlayer(@Valid @RequestBody Player player) {
-		return playerService.updatePlayer(player);
+	@PutMapping("/{id}")
+	public PlayerResponseDTO updatePlayer(
+	        @PathVariable Integer id,
+	        @Valid @RequestBody PlayerRequestDTO dto) {
+
+	    return playerService.updatePlayer(id, dto);
 	}
 }
