@@ -5,6 +5,8 @@ import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,38 +26,51 @@ public class PlayerController {
 	}
 	
 	@GetMapping
-	public List<PlayerResponseDTO> getAllPlayers() {
-
-	    return playerService.getAllPlayers();
+	public ResponseEntity<List<PlayerResponseDTO>> getAllPlayers() {
+		
+		List<PlayerResponseDTO> players = playerService.getAllPlayers();
+	    return ResponseEntity.ok(players);
 	}
 	
 	@GetMapping("/{id}")
-	public PlayerResponseDTO getPlayerById(
+	public ResponseEntity<PlayerResponseDTO> getPlayerById(
 	        @PathVariable Integer id) {
 
-	    return playerService.getPlayerById(id);
+	    PlayerResponseDTO player =
+	            playerService.getPlayerById(id);
+
+	    return ResponseEntity.ok(player);
 	}
 	
 	
 	@PostMapping
-	public PlayerResponseDTO savePlayer(
-	        @Valid @RequestBody PlayerRequestDTO dto) {
-
-	    return playerService.savePlayer(dto);
+	public ResponseEntity<PlayerResponseDTO> savePlayer(
+			@Valid @RequestBody PlayerRequestDTO dto){
+		PlayerResponseDTO savedPlayer = playerService.savePlayer(dto);
+		
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(savedPlayer);
 	}
 	
 	
 	@DeleteMapping("/{id}")
-	public String deletePlayer(@PathVariable Integer id) {
-		playerService.deletePlayer(id);
-		return "Player deleted Successfully";
+	public ResponseEntity<Void> deletePlayer(
+	        @PathVariable Integer id) {
+
+	    playerService.deletePlayer(id);
+
+	    return ResponseEntity.noContent().build();
 	}
 	
 	@PutMapping("/{id}")
-	public PlayerResponseDTO updatePlayer(
+	public ResponseEntity<PlayerResponseDTO> updatePlayer(
 	        @PathVariable Integer id,
 	        @Valid @RequestBody PlayerRequestDTO dto) {
 
-	    return playerService.updatePlayer(id, dto);
+	    PlayerResponseDTO updatedPlayer =
+	            playerService.updatePlayer(id, dto);
+
+	    return ResponseEntity.ok(updatedPlayer);
 	}
 }
