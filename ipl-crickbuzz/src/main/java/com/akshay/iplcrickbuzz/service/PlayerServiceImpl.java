@@ -1,108 +1,185 @@
 package com.akshay.iplcrickbuzz.service;
+
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.akshay.iplcrickbuzz.dto.PlayerRequestDTO;
 import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import com.akshay.iplcrickbuzz.entity.Player;
+import com.akshay.iplcrickbuzz.entity.Team;
 import com.akshay.iplcrickbuzz.exception.PlayerNotFoundException;
 import com.akshay.iplcrickbuzz.repository.PlayerRepository;
+import com.akshay.iplcrickbuzz.repository.TeamRepository;
 
 @Service
-public class PlayerServiceImpl implements PlayerService{
-	 private final PlayerRepository playerRepository;
-	 
-	 public PlayerServiceImpl(PlayerRepository playerRepository) {
-		 this.playerRepository = playerRepository;
-	 }
-	 
-	 
-	 private PlayerResponseDTO convertToResponseDTO(Player player) {
+public class PlayerServiceImpl implements PlayerService {
 
-		    PlayerResponseDTO dto = new PlayerResponseDTO();
+    private final PlayerRepository playerRepository;
+    private final TeamRepository teamRepository;
 
-		    dto.setPlayerId(player.getPlayerId());
-		    dto.setJerseyNumber(player.getJerseyNumber());
-		    dto.setPlayerName(player.getPlayerName());
-		    dto.setRuns(player.getRuns());
-		    dto.setWickets(player.getWickets());
-		    dto.setTeamName(player.getTeamName());
-		    dto.setSpecialization(player.getSpecialization());
+    // Constructor Injection
+    public PlayerServiceImpl(
+            PlayerRepository playerRepository,
+            TeamRepository teamRepository) {
 
-		    return dto;
-		}
-	 
-	 @Override
-	 public PlayerResponseDTO savePlayer(PlayerRequestDTO dto) {
-		 Player player = new Player();
+        this.playerRepository = playerRepository;
+        this.teamRepository = teamRepository;
+    }
 
-		    player.setJerseyNumber(dto.getJerseyNumber());
-		    player.setPlayerName(dto.getPlayerName());
-		    player.setRuns(dto.getRuns());
-		    player.setWickets(dto.getWickets());
-		    player.setTeamName(dto.getTeamName());
-		    player.setSpecialization(dto.getSpecialization());
 
-		    Player savedPlayer = playerRepository.save(player);
+    // =====================================================
+    // ENTITY → RESPONSE DTO
+    // =====================================================
 
-		    return convertToResponseDTO(savedPlayer);
-	 }
-	 
-	 
-	 
-	 @Override
-	 public List<PlayerResponseDTO> getAllPlayers() {
+    private PlayerResponseDTO convertToResponseDTO(Player player) {
 
-	     List<Player> players = playerRepository.findAll();
+        PlayerResponseDTO dto = new PlayerResponseDTO();
 
-	     return players.stream()
-	             .map(this::convertToResponseDTO)
-	             .toList();
-	 }
-	 
-	 @Override
-	 public PlayerResponseDTO getPlayerById(Integer id) {
+        dto.setPlayerId(player.getPlayerId());
+        dto.setJerseyNumber(player.getJerseyNumber());
+        dto.setPlayerName(player.getPlayerName());
+        dto.setRuns(player.getRuns());
+        dto.setWickets(player.getWickets());
 
-	     Player player = playerRepository.findById(id)
-	             .orElseThrow(() ->
-	                     new PlayerNotFoundException(
-	                             "Player not found with id: " + id));
+        // Get team name through Team relationship
+        if (player.getTeam() != null) {
+            dto.setTeamName(player.getTeam().getTeamName());
+        }
 
-	     return convertToResponseDTO(player);
-	 }
-	 
-	 
-	 @Override
-	 public PlayerResponseDTO updatePlayer(
-	         Integer id,
-	         PlayerRequestDTO dto) {
+        dto.setSpecialization(player.getSpecialization());
 
-	     Player player = playerRepository.findById(id)
-	             .orElseThrow(() ->
-	                     new PlayerNotFoundException(
-	                             "Player not found with id: " + id));
+        return dto;
+    }
 
-	     player.setJerseyNumber(dto.getJerseyNumber());
-	     player.setPlayerName(dto.getPlayerName());
-	     player.setRuns(dto.getRuns());
-	     player.setWickets(dto.getWickets());
-	     player.setTeamName(dto.getTeamName());
-	     player.setSpecialization(dto.getSpecialization());
 
-	     Player updatedPlayer = playerRepository.save(player);
+    // =====================================================
+    // CREATE PLAYER
+    // =====================================================
 
-	     return convertToResponseDTO(updatedPlayer);
-	 }
-	 
-	 
-	 @Override
-	 public void deletePlayer(Integer id) {
+    @Override
+    public PlayerResponseDTO savePlayer(PlayerRequestDTO dto) {
 
-	     Player player = playerRepository.findById(id)
-	             .orElseThrow(() ->
-	                     new PlayerNotFoundException(
-	                             "Player not found with id: " + id));
+        Player player = new Player();
 
-	     playerRepository.delete(player);
-	 }
+        player.setJerseyNumber(dto.getJerseyNumber());
+        player.setPlayerName(dto.getPlayerName());
+        player.setRuns(dto.getRuns());
+        player.setWickets(dto.getWickets());
+        player.setSpecialization(dto.getSpecialization());
+
+
+        // Find Team using teamId
+        Team team = teamRepository.findById(dto.getTeamId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Team not found with id: "
+                                        + dto.getTeamId()
+                        )
+                );
+
+
+        // Connect Player with Team
+        player.setTeam(team);
+
+
+        Player savedPlayer = playerRepository.save(player);
+
+        return convertToResponseDTO(savedPlayer);
+    }
+
+
+    // =====================================================
+    // GET ALL PLAYERS
+    // =====================================================
+
+    @Override
+    public List<PlayerResponseDTO> getAllPlayers() {
+
+        List<Player> players = playerRepository.findAll();
+
+        return players.stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+
+    // =====================================================
+    // GET PLAYER BY ID
+    // =====================================================
+
+    @Override
+    public PlayerResponseDTO getPlayerById(Integer id) {
+
+        Player player = playerRepository.findById(id)
+                .orElseThrow(() ->
+                        new PlayerNotFoundException(
+                                "Player not found with id: " + id
+                        )
+                );
+
+        return convertToResponseDTO(player);
+    }
+
+
+    // =====================================================
+    // UPDATE PLAYER
+    // =====================================================
+
+    @Override
+    public PlayerResponseDTO updatePlayer(
+            Integer id,
+            PlayerRequestDTO dto) {
+
+        Player player = playerRepository.findById(id)
+                .orElseThrow(() ->
+                        new PlayerNotFoundException(
+                                "Player not found with id: " + id
+                        )
+                );
+
+
+        player.setJerseyNumber(dto.getJerseyNumber());
+        player.setPlayerName(dto.getPlayerName());
+        player.setRuns(dto.getRuns());
+        player.setWickets(dto.getWickets());
+        player.setSpecialization(dto.getSpecialization());
+
+
+        // Find new Team
+        Team team = teamRepository.findById(dto.getTeamId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Team not found with id: "
+                                        + dto.getTeamId()
+                        )
+                );
+
+
+        // Update Player → Team relationship
+        player.setTeam(team);
+
+
+        Player updatedPlayer = playerRepository.save(player);
+
+        return convertToResponseDTO(updatedPlayer);
+    }
+
+
+    // =====================================================
+    // DELETE PLAYER
+    // =====================================================
+
+    @Override
+    public void deletePlayer(Integer id) {
+
+        Player player = playerRepository.findById(id)
+                .orElseThrow(() ->
+                        new PlayerNotFoundException(
+                                "Player not found with id: " + id
+                        )
+                );
+
+        playerRepository.delete(player);
+    }
 }

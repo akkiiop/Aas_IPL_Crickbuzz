@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
 import com.akshay.iplcrickbuzz.service.TeamService;
 
@@ -75,5 +77,17 @@ public class TeamController {
 
 	    return ResponseEntity.ok(updatedTeam);
 	}
+	
+	@GetMapping("/{id}/players")
+	public ResponseEntity<List<PlayerResponseDTO>> getPlayersByTeamId(
+	        @PathVariable Integer id) {
+
+	    List<PlayerResponseDTO> players =
+	            teamService.getPlayersByTeamId(id);
+
+	    return ResponseEntity.ok(players);
+	}
+	
+	
 	
 }

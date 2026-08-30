@@ -2,12 +2,15 @@ package com.akshay.iplcrickbuzz.service;
 
 import java.util.List;
 
+import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
 import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
 import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
 import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
 import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
 import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
+
+
 public interface TeamService {
 	
 	TeamResponseDTO saveTeam(TeamRequestDTO request);
@@ -19,4 +22,6 @@ public interface TeamService {
 	TeamResponseDTO updateTeam(Integer id, TeamRequestDTO request);
 	
 	void deleteTeam(Integer id);
+	
+	List<PlayerResponseDTO> getPlayersByTeamId(Integer teamId);
 }

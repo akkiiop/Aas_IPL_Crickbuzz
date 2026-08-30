@@ -1,10 +1,21 @@
 package com.akshay.iplcrickbuzz.service;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
+import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
+import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
+import com.akshay.iplcrickbuzz.entity.Player;
+import com.akshay.iplcrickbuzz.entity.Team;
+import com.akshay.iplcrickbuzz.repository.TeamRepository;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
 import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
 import com.akshay.iplcrickbuzz.entity.Team;
@@ -125,5 +136,41 @@ public class TeamServiceImpl implements TeamService {
         response.setHomeGround(team.getHomeGround());
 
         return response;
+    }
+    
+    @Override
+    public List<PlayerResponseDTO> getPlayersByTeamId(Integer teamId) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Team not found with id: " + teamId
+                        )
+                );
+
+        return team.getPlayers()
+                .stream()
+                .map(this::convertPlayerToResponseDTO)
+                .toList();
+    }
+    
+    
+    private PlayerResponseDTO convertPlayerToResponseDTO(Player player) {
+
+        PlayerResponseDTO dto = new PlayerResponseDTO();
+
+        dto.setPlayerId(player.getPlayerId());
+        dto.setJerseyNumber(player.getJerseyNumber());
+        dto.setPlayerName(player.getPlayerName());
+        dto.setRuns(player.getRuns());
+        dto.setWickets(player.getWickets());
+
+        if (player.getTeam() != null) {
+            dto.setTeamName(player.getTeam().getTeamName());
+        }
+
+        dto.setSpecialization(player.getSpecialization());
+
+        return dto;
     }
 }

@@ -1,9 +1,12 @@
 package com.akshay.iplcrickbuzz.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -24,6 +27,9 @@ public class Team {
 	private String captain;
 	
 	private String homeGround;
+	
+	@OneToMany(mappedBy = "team")
+	private List<Player> players;
 
 	public Integer getTeamId() {
 		return teamId;
@@ -72,6 +78,14 @@ public class Team {
 	public void setHomeGround(String homeGround) {
 		this.homeGround = homeGround;
 	}
+	
+	public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
 	
 	
 }

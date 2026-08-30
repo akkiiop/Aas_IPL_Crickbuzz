@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public class PlayerRequestDTO {
 	@Min(value = 1, message = "Jersey number must be at least  1")
 	@Max(value = 999, message = "Jersey number must not exceed 999")
@@ -18,8 +21,9 @@ public class PlayerRequestDTO {
 	@Min(value = 0, message = "Wickets cannot be negative")
 	private int wickets;
 	
-	@NotBlank(message = "Team name is required")
-	private String teamName;
+	@NotNull
+	@Positive
+	private Integer teamId;
 	
 	private String specialization;
 	
@@ -56,12 +60,18 @@ public class PlayerRequestDTO {
 		this.wickets = wickets;
 	}
 
-	public String getTeamName() {
-		return teamName;
+	
+
+	public Integer getTeamId() {
+		return teamId;
 	}
 
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
+	public void setTeamId(Integer teamId) {
+		this.teamId = teamId;
+	}
+
+	public void setJerseyNumber(Integer jerseyNumber) {
+		this.jerseyNumber = jerseyNumber;
 	}
 
 	public String getSpecialization() {

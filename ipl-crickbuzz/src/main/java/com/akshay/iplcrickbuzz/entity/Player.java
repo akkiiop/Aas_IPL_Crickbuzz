@@ -1,6 +1,7 @@
 package com.akshay.iplcrickbuzz.entity;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
@@ -8,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Player {
@@ -29,8 +32,11 @@ public class Player {
 	@Min(value = 0, message = "Wickets cannot be negative")
 	private int wickets;
 	
-	@NotBlank(message = "Team name is required")
-	private String teamName;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "team_id")
+	private Team team;
+	
 	private String specialization;
 	
 	public Player() {
@@ -77,12 +83,14 @@ public class Player {
 		this.wickets = wickets;
 	}
 
-	public String getTeamName() {
-		return teamName;
+	
+
+	public Team getTeam() {
+		return team;
 	}
 
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 	public String getSpecialization() {
@@ -96,11 +104,13 @@ public class Player {
 	@Override
 	public String toString() {
 		return "Player [playerId=" + playerId + ", jerseyNumber=" + jerseyNumber + ", playerName=" + playerName
-				+ ", runs=" + runs + ", wickets=" + wickets + ", teamName=" + teamName + ", specialization="
-				+ specialization + ", getPlayerId()=" + getPlayerId() + ", getJerseyNumber()=" + getJerseyNumber()
-				+ ", getPlayerName()=" + getPlayerName() + ", getRuns()=" + getRuns() + ", getWickets()=" + getWickets()
-				+ ", getTeamName()=" + getTeamName() + ", getSpecialization()=" + getSpecialization() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ ", runs=" + runs + ", wickets=" + wickets + ", team=" + team + ", specialization=" + specialization
+				+ ", getPlayerId()=" + getPlayerId() + ", getJerseyNumber()=" + getJerseyNumber() + ", getPlayerName()="
+				+ getPlayerName() + ", getRuns()=" + getRuns() + ", getWickets()=" + getWickets() + ", getTeam()="
+				+ getTeam() + ", getSpecialization()=" + getSpecialization() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
+
+	
 	
 }
