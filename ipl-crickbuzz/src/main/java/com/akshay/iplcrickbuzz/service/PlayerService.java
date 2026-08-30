@@ -1,19 +1,25 @@
 package com.akshay.iplcrickbuzz.service;
 import java.util.List;
 
+import org.springframework.boot.data.autoconfigure.web.DataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+
 import com.akshay.iplcrickbuzz.dto.PlayerRequestDTO;
 import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 
 public interface PlayerService {
 	PlayerResponseDTO savePlayer(PlayerRequestDTO dto);
 	
-	List<PlayerResponseDTO> getAllPlayers();
+	Page<PlayerResponseDTO> getAllPlayers(org.springframework.data.domain.Pageable pageable);
+	
+	List<PlayerResponseDTO> searchPlayers(String name);
 	
 	PlayerResponseDTO getPlayerById(Integer id);
-	
 	
 	
 	void deletePlayer(Integer id);
 
 	PlayerResponseDTO updatePlayer(Integer id, PlayerRequestDTO dto);
+	
+	
 }

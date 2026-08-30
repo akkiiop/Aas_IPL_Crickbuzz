@@ -2,6 +2,8 @@ package com.akshay.iplcrickbuzz.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.akshay.iplcrickbuzz.dto.PlayerRequestDTO;
@@ -94,13 +96,12 @@ public class PlayerServiceImpl implements PlayerService {
     // =====================================================
 
     @Override
-    public List<PlayerResponseDTO> getAllPlayers() {
+    public Page<PlayerResponseDTO> getAllPlayers(Pageable pageable) {
 
-        List<Player> players = playerRepository.findAll();
+        Page<Player> players =
+                playerRepository.findAll(pageable);
 
-        return players.stream()
-                .map(this::convertToResponseDTO)
-                .toList();
+        return players.map(this::convertToResponseDTO);
     }
 
 
@@ -181,5 +182,18 @@ public class PlayerServiceImpl implements PlayerService {
                 );
 
         playerRepository.delete(player);
+    }
+    
+    
+    @Override
+    public List<PlayerResponseDTO> searchPlayers(String name) {
+
+        List<Player> players =
+                playerRepository
+                        .findByPlayerNameContainingIgnoreCase(name);
+
+        return players.stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 }
