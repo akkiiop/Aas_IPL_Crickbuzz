@@ -6,25 +6,30 @@ import jakarta.validation.constraints.NotBlank;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class PlayerRequestDTO {
 	@Min(value = 1, message = "Jersey number must be at least  1")
 	@Max(value = 999, message = "Jersey number must not exceed 999")
+	@NotNull(message = "Jersey number is required")
 	private Integer jerseyNumber;
 	
 	@NotBlank(message = "Player name is required")
 	private String playerName;
 	
-	@Min(value = 0, message = "Runs cannot be negative")
-	private int runs;
+	@NotNull(message = "Runs are required")
+    @PositiveOrZero(message = "Runs cannot be negative")
+	private Integer runs;
 	
-	@Min(value = 0, message = "Wickets cannot be negative")
-	private int wickets;
+	@NotNull(message = "Wickets are required")
+    @PositiveOrZero(message = "Wickets cannot be negative")
+	private Integer wickets;
 	
-	@NotNull
-	@Positive
+	@NotNull(message = "Team ID is required")
+    @Positive(message = "Team ID must be greater than 0")
 	private Integer teamId;
 	
+	@NotBlank(message = "Specialization is required")
 	private String specialization;
 	
 

@@ -9,6 +9,7 @@ import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
 import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
 import com.akshay.iplcrickbuzz.entity.Player;
 import com.akshay.iplcrickbuzz.entity.Team;
+import com.akshay.iplcrickbuzz.exception.TeamNotFoundException;
 import com.akshay.iplcrickbuzz.repository.TeamRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Team not found with id: " + id)
+                        new TeamNotFoundException("Team not found with id: " + id)
                 );
 
         return convertToResponseDTO(team);

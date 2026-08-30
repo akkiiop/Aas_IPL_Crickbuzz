@@ -1,4 +1,5 @@
 package com.akshay.iplcrickbuzz.exception;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,31 +9,73 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.akshay.iplcrickbuzz.dto.ErrorResponseDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 		
-		@ExceptionHandler(PlayerNotFoundException.class)
-		public ResponseEntity<String> handlePlayerNotFound(PlayerNotFoundException ex){
-			return ResponseEntity
-					.status(HttpStatus.NOT_FOUND)
-					.body(ex.getMessage());
-		}
+	@ExceptionHandler(PlayerNotFoundException.class)
+	public ResponseEntity<ErrorResponseDTO> handlePlayerNotFound(
+	        PlayerNotFoundException ex,
+	        HttpServletRequest request) {
+
+	    ErrorResponseDTO error = new ErrorResponseDTO(
+	            LocalDateTime.now(),
+	            HttpStatus.NOT_FOUND.value(),
+	            ex.getMessage(),
+	            request.getRequestURI()
+	    );
+
+	    return ResponseEntity
+	            .status(HttpStatus.NOT_FOUND)
+	            .body(error);
+	}
 		
 		
 		
-		@ExceptionHandler(MethodArgumentNotValidException.class)
-		public ResponseEntity<Map<String,String>> handleValidationErrors(
-				MethodArgumentNotValidException ex){
-			Map<String, String> errors = new HashMap<>();
-			ex.getBindingResult()
-				.getFieldErrors()
-				.forEach(error -> 
-			
-			errors.put(error.getField(),error.getDefaultMessage())
-			);
-			
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-			
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponseDTO> handleValidationException(
+	        MethodArgumentNotValidException ex,
+	        HttpServletRequest request) {
+
+	    String message = ex.getBindingResult()
+	            .getFieldErrors()
+	            .stream()
+	            .map(error ->
+	                    error.getField() + ": " + error.getDefaultMessage())
+	            .findFirst()
+	            .orElse("Validation failed");
+
+	    ErrorResponseDTO error = new ErrorResponseDTO(
+	            LocalDateTime.now(),
+	            HttpStatus.BAD_REQUEST.value(),
+	            message,
+	            request.getRequestURI()
+	    );
+
+	    return ResponseEntity
+	            .status(HttpStatus.BAD_REQUEST)
+	            .body(error);
+	}
+		
+		
+		@ExceptionHandler(TeamNotFoundException.class)
+		public ResponseEntity<ErrorResponseDTO> handleTeamNotFound(
+		        TeamNotFoundException ex,
+		        HttpServletRequest request) {
+
+		    ErrorResponseDTO error = new ErrorResponseDTO(
+		            LocalDateTime.now(),
+		            HttpStatus.NOT_FOUND.value(),
+		            ex.getMessage(),
+		            request.getRequestURI()
+		    );
+
+		    return ResponseEntity
+		            .status(HttpStatus.NOT_FOUND)
+		            .body(error);
 		}
 	
 }
