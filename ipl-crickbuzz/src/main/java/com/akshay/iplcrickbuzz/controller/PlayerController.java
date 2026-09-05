@@ -2,7 +2,10 @@ package com.akshay.iplcrickbuzz.controller;
 
 import com.akshay.iplcrickbuzz.dto.PlayerRequestDTO;
 import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
+import com.akshay.iplcrickbuzz.service.PlayerService;
+
 import jakarta.validation.Valid;
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -18,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.akshay.iplcrickbuzz.service.PlayerService;
-
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,172 +32,220 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/players")
 @Tag(
-	    name = "Players",
-	    description = "APIs for managing IPL players"
-	)
+        name = "Players",
+        description = "APIs for managing IPL players"
+)
 public class PlayerController {
-	private final PlayerService playerService;
-	public PlayerController(PlayerService playerService) {
-		this.playerService = playerService;
-	}
-	
-	
-	
-	
-	
-	
-	@Operation(
-		    summary = "Get all players",
-		    description = "Returns a paginated and sortable list of IPL players"
-		)
-		@ApiResponses({
-		    @ApiResponse(
-		        responseCode = "200",
-		        description = "Players retrieved successfully"
-		    )
-		})
-	@GetMapping
-	public ResponseEntity<Page<PlayerResponseDTO>> getAllPlayers(
-	        Pageable pageable) {
 
-	    Page<PlayerResponseDTO> players =
-	            playerService.getAllPlayers(pageable);
+    private final PlayerService playerService;
 
-	    return ResponseEntity.ok(players);
-	}
-	
-	@Operation(
-		    summary = "Get player by ID",
-		    description = "Returns a single IPL player using the player ID"
-		)
-		@ApiResponses({
-		    @ApiResponse(
-		        responseCode = "200",
-		        description = "Player found"
-		    ),
-		    @ApiResponse(
-		        responseCode = "404",
-		        description = "Player not found"
-		    )
-		})
-		@GetMapping("/{id}")
-		public ResponseEntity<PlayerResponseDTO> getPlayerById(
-		        @Parameter(
-		            description = "ID of the player",
-		            example = "1"
-		        )
-		        @PathVariable Integer id) {
+    // Constructor Injection
+    public PlayerController(PlayerService playerService) {
+        this.playerService = playerService;
+    }
 
-		    PlayerResponseDTO player =
-		            playerService.getPlayerById(id);
 
-		    return ResponseEntity.ok(player);
-		}
-	
-	@Operation(
-		    summary = "Create a player",
-		    description = "Creates a new IPL player"
-		)
-		@ApiResponses({
-		    @ApiResponse(
-		        responseCode = "201",
-		        description = "Player created successfully"
-		    ),
-		    @ApiResponse(
-		        responseCode = "400",
-		        description = "Invalid player data"
-		    )
-		})
-	@PostMapping
-	public ResponseEntity<PlayerResponseDTO> savePlayer(
-			@Valid @RequestBody PlayerRequestDTO dto){
-		PlayerResponseDTO savedPlayer = playerService.savePlayer(dto);
-		
-		return ResponseEntity
-				.status(HttpStatus.CREATED)
-				.body(savedPlayer);
-	}
-	
-	
-	
-	
-	
-	@Operation(
-		    summary = "Delete a player",
-		    description = "Deletes an IPL player using the player ID"
-		)
-		@ApiResponses({
-		    @ApiResponse(
-		        responseCode = "204",
-		        description = "Player deleted successfully"
-		    ),
-		    @ApiResponse(
-		        responseCode = "404",
-		        description = "Player not found"
-		    )
-		})
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletePlayer(
-	        @PathVariable Integer id) {
+    // =====================================================
+    // GET ALL PLAYERS - PAGINATION
+    // =====================================================
 
-	    playerService.deletePlayer(id);
+    @Operation(
+            summary = "Get all players",
+            description = "Returns a paginated and sortable list of IPL players"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Players retrieved successfully"
+            )
+    })
+    @GetMapping
+    public ResponseEntity<Page<PlayerResponseDTO>> getAllPlayers(
+            Pageable pageable) {
 
-	    return ResponseEntity.noContent().build();
-	}
-	
-	
-	
-	
-	
-	@Operation(
-		    summary = "Update a player",
-		    description = "Updates an existing IPL player's information"
-		)
-		@ApiResponses({
-		    @ApiResponse(
-		        responseCode = "200",
-		        description = "Player updated successfully"
-		    ),
-		    @ApiResponse(
-		        responseCode = "404",
-		        description = "Player not found"
-		    ),
-		    @ApiResponse(
-		        responseCode = "400",
-		        description = "Invalid player data"
-		    )
-		})
-	@PutMapping("/{id}")
-	public ResponseEntity<PlayerResponseDTO> updatePlayer(
-	        @PathVariable Integer id,
-	        @Valid @RequestBody PlayerRequestDTO dto) {
+        Page<PlayerResponseDTO> players =
+                playerService.getAllPlayers(pageable);
 
-	    PlayerResponseDTO updatedPlayer =
-	            playerService.updatePlayer(id, dto);
+        return ResponseEntity.ok(players);
+    }
 
-	    return ResponseEntity.ok(updatedPlayer);
-	}
-	
-	
-	
-	
-	@Operation(
-		    summary = "Search players",
-		    description = "Searches IPL players by name"
-		)
-		@ApiResponses({
-		    @ApiResponse(
-		        responseCode = "200",
-		        description = "Search completed successfully"
-		    )
-		})
-	@GetMapping("/search")
-	public ResponseEntity<List<PlayerResponseDTO>> searchPlayers(
-	        @RequestParam("name") String name) {
 
-	    List<PlayerResponseDTO> players =
-	            playerService.searchPlayers(name);
+    // =====================================================
+    // SEARCH PLAYERS BY NAME
+    // =====================================================
 
-	    return ResponseEntity.ok(players);
-	}
+    @Operation(
+            summary = "Search players",
+            description = "Searches IPL players by name"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Search completed successfully"
+            )
+    })
+    @GetMapping("/search")
+    public ResponseEntity<List<PlayerResponseDTO>> searchPlayers(
+            @Parameter(
+                    description = "Player name or part of the player name",
+                    example = "Virat"
+            )
+            @RequestParam("name") String name) {
+
+        List<PlayerResponseDTO> players =
+                playerService.searchPlayers(name);
+
+        return ResponseEntity.ok(players);
+    }
+    
+    
+    
+    @Operation(
+    	    summary = "Get players by team",
+    	    description = "Returns all IPL players belonging to a specific team"
+    	)
+    	@ApiResponses({
+    	    @ApiResponse(
+    	        responseCode = "200",
+    	        description = "Players retrieved successfully"
+    	    )
+    	})
+    	@GetMapping("/team/{teamId}")
+    	public ResponseEntity<List<PlayerResponseDTO>> getPlayersByTeam(
+    	        @Parameter(
+    	            description = "ID of the team",
+    	            example = "9"
+    	        )
+    	        @PathVariable Integer teamId) {
+
+    	    List<PlayerResponseDTO> players =
+    	            playerService.getPlayersByTeam(teamId);
+
+    	    return ResponseEntity.ok(players);
+    	}
+
+    // =====================================================
+    // GET PLAYER BY ID
+    // =====================================================
+
+    @Operation(
+            summary = "Get player by ID",
+            description = "Returns a single IPL player using the player ID"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Player found"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Player not found"
+            )
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<PlayerResponseDTO> getPlayerById(
+            @Parameter(
+                    description = "ID of the player",
+                    example = "1"
+            )
+            @PathVariable Integer id) {
+
+        PlayerResponseDTO player =
+                playerService.getPlayerById(id);
+
+        return ResponseEntity.ok(player);
+    }
+
+
+    // =====================================================
+    // CREATE PLAYER
+    // =====================================================
+
+    @Operation(
+            summary = "Create a player",
+            description = "Creates a new IPL player"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Player created successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid player data"
+            )
+    })
+    @PostMapping
+    public ResponseEntity<PlayerResponseDTO> savePlayer(
+            @Valid @RequestBody PlayerRequestDTO dto) {
+
+        PlayerResponseDTO savedPlayer =
+                playerService.savePlayer(dto);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedPlayer);
+    }
+
+
+    // =====================================================
+    // UPDATE PLAYER
+    // =====================================================
+
+    @Operation(
+            summary = "Update a player",
+            description = "Updates an existing IPL player's information"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Player updated successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Player not found"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid player data"
+            )
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<PlayerResponseDTO> updatePlayer(
+            @PathVariable Integer id,
+            @Valid @RequestBody PlayerRequestDTO dto) {
+
+        PlayerResponseDTO updatedPlayer =
+                playerService.updatePlayer(id, dto);
+
+        return ResponseEntity.ok(updatedPlayer);
+    }
+
+
+    // =====================================================
+    // DELETE PLAYER
+    // =====================================================
+
+    @Operation(
+            summary = "Delete a player",
+            description = "Deletes an IPL player using the player ID"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Player deleted successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Player not found"
+            )
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlayer(
+            @PathVariable Integer id) {
+
+        playerService.deletePlayer(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

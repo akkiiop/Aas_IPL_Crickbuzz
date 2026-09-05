@@ -196,4 +196,15 @@ public class PlayerServiceImpl implements PlayerService {
                 .map(this::convertToResponseDTO)
                 .toList();
     }
+    
+    @Override
+    public List<PlayerResponseDTO> getPlayersByTeam(Integer teamId) {
+
+        List<Player> players =
+                playerRepository.findByTeam_TeamId(teamId);
+
+        return players.stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
 }

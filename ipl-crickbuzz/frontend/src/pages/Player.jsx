@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
     getAllPlayers,
     getPlayerById,
-    deletePlayer
+    createPlayer,
+    updatePlayer,
+    deletePlayer,
+    searchPlayers,
+    getPlayersByTeam
 } from "../services/playerService";
 
 import PlayerForm from "../components/PlayerForm";
 
-
-function Players() {
+const Player = () => {
 
     // =====================================================
-    // STATE
+    // PLAYER STATE
     // =====================================================
 
     const [players, setPlayers] = useState([]);
@@ -36,6 +39,82 @@ function Players() {
 
 
     // =====================================================
+    // SEARCH STATE
+    // =====================================================
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const [isSearching, setIsSearching] = useState(false);
+
+
+    // =====================================================
+    // TEAM FILTER STATE
+    // =====================================================
+
+    const [selectedTeam, setSelectedTeam] = useState("");
+
+    const [isTeamFiltering, setIsTeamFiltering] = useState(false);
+
+
+    // =====================================================
+    // IPL TEAMS
+    // =====================================================
+
+    const teams = [
+        {
+            id: 1,
+            name: "Chennai Super Kings",
+            shortName: "CSK"
+        },
+        {
+            id: 2,
+            name: "Delhi Capitals",
+            shortName: "DC"
+        },
+        {
+            id: 3,
+            name: "Gujarat Titans",
+            shortName: "GT"
+        },
+        {
+            id: 4,
+            name: "Kolkata Knight Riders",
+            shortName: "KKR"
+        },
+        {
+            id: 5,
+            name: "Lucknow Super Giants",
+            shortName: "LSG"
+        },
+        {
+            id: 6,
+            name: "Mumbai Indians",
+            shortName: "MI"
+        },
+        {
+            id: 7,
+            name: "Punjab Kings",
+            shortName: "PBKS"
+        },
+        {
+            id: 8,
+            name: "Rajasthan Royals",
+            shortName: "RR"
+        },
+        {
+            id: 9,
+            name: "Royal Challengers Bengaluru",
+            shortName: "RCB"
+        },
+        {
+            id: 10,
+            name: "Sunrisers Hyderabad",
+            shortName: "SRH"
+        }
+    ];
+
+
+    // =====================================================
     // LOAD PLAYERS
     // =====================================================
 
@@ -47,34 +126,16 @@ function Players() {
 
             setError("");
 
-
             const response = await getAllPlayers(page);
-
-            console.log("Players API response:", response.data);
-
 
             const data = response.data;
 
-
-            // -------------------------------------------------
-            // SAFETY CHECK
-            // -------------------------------------------------
 
             if (!data) {
 
                 throw new Error("Empty response from server.");
 
             }
-
-
-            // Backend returns:
-            //
-            // {
-            //   content: [...],
-            //   number: 0,
-            //   totalPages: 6,
-            //   totalElements: 102
-            // }
 
 
             setPlayers(
@@ -122,16 +183,12 @@ function Players() {
 
         }
 
-        catch (error) {
+        catch (err) {
 
             console.error(
-
                 "Load players error:",
-
-                error
-
+                err
             );
-
 
             setPlayers([]);
 
@@ -140,9 +197,7 @@ function Players() {
             setTotalPlayers(0);
 
             setError(
-
                 "Failed to load players."
-
             );
 
         }
@@ -160,17 +215,11 @@ function Players() {
     // INITIAL LOAD
     // =====================================================
 
-	useEffect(() => {
+    useEffect(() => {
 
-	    const loadInitialPlayers = async () => {
+        loadPlayers(0);
 
-	        await loadPlayers(0);
-
-	    };
-
-	    loadInitialPlayers();
-
-	}, []);
+    }, []);
 
 
     // =====================================================
@@ -183,25 +232,18 @@ function Players() {
 
             setError("");
 
-
             const response =
-
                 await getPlayerById(id);
 
 
             console.log(
-
                 "Player to edit:",
-
                 response.data
-
             );
 
 
             setPlayerToEdit(
-
                 response.data
-
             );
 
 
@@ -215,24 +257,360 @@ function Players() {
 
         }
 
-        catch (error) {
+        catch (err) {
 
             console.error(
-
                 "Load player error:",
+                err
+            );
 
-                error
+            setError(
+                "Failed to load player."
+            );
+
+        }
+
+    };
+
+
+    // =====================================================
+    // SEARCH PLAYERS
+    // =====================================================
+
+    const handleSearch = async () => {
+
+        const name = searchTerm.trim();
+
+
+        // -----------------------------
+        // Empty Search
+        // -----------------------------
+
+        if (name === "") {
+
+            setIsSearching(false);
+
+            setError("");
+
+            setIsTeamFiltering(false);
+
+            setSelectedTeam("");
+
+            await loadPlayers(0);
+
+            return;
+
+        }
+
+
+        try {
+
+            setLoading(true);
+
+            setError("");
+
+
+            // Search mode ON
+
+            setIsSearching(true);
+
+
+            // Team filter OFF
+
+            setIsTeamFiltering(false);
+
+            setSelectedTeam("");
+
+
+            const response =
+                await searchPlayers(name);
+
+
+            setPlayers(
+
+                Array.isArray(response.data)
+
+                    ? response.data
+
+                    : []
 
             );
 
 
-            setError(
+            setTotalPages(0);
 
-                "Failed to load player."
+            setTotalPlayers(
+                Array.isArray(response.data)
+                    ? response.data.length
+                    : 0
+            );
+
+        }
+
+        catch (err) {
+
+            console.error(
+                "Search players error:",
+                err
+            );
+
+            setPlayers([]);
+
+            setError(
+                "Failed to search players."
+            );
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+    // =====================================================
+    // CLEAR SEARCH
+    // =====================================================
+
+    const handleClearSearch = async () => {
+
+        setSearchTerm("");
+
+        setIsSearching(false);
+
+        setError("");
+
+
+        await loadPlayers(0);
+
+    };
+
+
+    // =====================================================
+    // SEARCH ENTER KEY
+    // =====================================================
+
+    const handleSearchKeyDown = (event) => {
+
+        if (event.key === "Enter") {
+
+            handleSearch();
+
+        }
+
+    };
+
+
+    // =====================================================
+    // TEAM FILTER
+    // =====================================================
+
+    const handleTeamFilter = async (teamId) => {
+
+        setSelectedTeam(teamId);
+
+        setError("");
+
+
+        // =================================================
+        // ALL TEAMS
+        // =================================================
+
+        if (teamId === "") {
+
+            setIsTeamFiltering(false);
+
+            setIsSearching(false);
+
+            setSearchTerm("");
+
+
+            await loadPlayers(0);
+
+            return;
+
+        }
+
+
+        try {
+
+            setLoading(true);
+
+            setError("");
+
+
+            // Team filter ON
+
+            setIsTeamFiltering(true);
+
+
+            // Search OFF
+
+            setIsSearching(false);
+
+            setSearchTerm("");
+
+
+            const response =
+                await getPlayersByTeam(teamId);
+
+
+            setPlayers(
+
+                Array.isArray(response.data)
+
+                    ? response.data
+
+                    : []
+
+            );
+
+
+            setTotalPages(0);
+
+            setTotalPlayers(
+
+                Array.isArray(response.data)
+
+                    ? response.data.length
+
+                    : 0
 
             );
 
         }
+
+        catch (err) {
+
+            console.error(
+                "Team filter error:",
+                err
+            );
+
+            setPlayers([]);
+
+            setError(
+                "Failed to load players for selected team."
+            );
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+    // =====================================================
+    // PLAYER SAVED
+    // =====================================================
+
+    const handlePlayerSaved = async () => {
+
+        try {
+
+            setError("");
+
+
+            // =================================================
+            // IF TEAM FILTER IS ACTIVE
+            // =================================================
+
+            if (
+                isTeamFiltering &&
+                selectedTeam !== ""
+            ) {
+
+                const response =
+                    await getPlayersByTeam(
+                        selectedTeam
+                    );
+
+
+                setPlayers(
+                    response.data
+                );
+
+                setTotalPages(0);
+
+                setTotalPlayers(
+                    response.data.length
+                );
+
+            }
+
+
+            // =================================================
+            // IF SEARCH IS ACTIVE
+            // =================================================
+
+            else if (
+                isSearching &&
+                searchTerm.trim() !== ""
+            ) {
+
+                const response =
+                    await searchPlayers(
+                        searchTerm
+                    );
+
+
+                setPlayers(
+                    response.data
+                );
+
+                setTotalPages(0);
+
+                setTotalPlayers(
+                    response.data.length
+                );
+
+            }
+
+
+            // =================================================
+            // NORMAL PAGINATION
+            // =================================================
+
+            else {
+
+                await loadPlayers(
+                    currentPage
+                );
+
+            }
+
+        }
+
+        catch (err) {
+
+            console.error(
+                "Refresh players error:",
+                err
+            );
+
+            setError(
+                "Player saved, but failed to refresh player list."
+            );
+
+        }
+
+    };
+
+
+    // =====================================================
+    // EDIT COMPLETE
+    // =====================================================
+
+    const handleEditComplete = () => {
+
+        setPlayerToEdit(null);
 
     };
 
@@ -243,11 +621,10 @@ function Players() {
 
     const handleDelete = async (id) => {
 
-        const confirmed = window.confirm(
-
-            "Are you sure you want to delete this player?"
-
-        );
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to delete this player?"
+            );
 
 
         if (!confirmed) {
@@ -259,61 +636,114 @@ function Players() {
 
         try {
 
+            setLoading(true);
+
             setError("");
 
 
             await deletePlayer(id);
 
 
-            // -------------------------------------------------
-            // If deleting the only player on the current page,
-            // and we are not on page 1, go to previous page.
-            // -------------------------------------------------
+            // =================================================
+            // TEAM FILTER ACTIVE
+            // =================================================
 
             if (
-
-                players.length === 1 &&
-
-                currentPage > 0
-
+                isTeamFiltering &&
+                selectedTeam !== ""
             ) {
 
-                await loadPlayers(
+                const response =
+                    await getPlayersByTeam(
+                        selectedTeam
+                    );
 
-                    currentPage - 1
 
+                setPlayers(
+                    response.data
+                );
+
+                setTotalPlayers(
+                    response.data.length
                 );
 
             }
 
+
+            // =================================================
+            // SEARCH ACTIVE
+            // =================================================
+
+            else if (
+                isSearching &&
+                searchTerm.trim() !== ""
+            ) {
+
+                const response =
+                    await searchPlayers(
+                        searchTerm
+                    );
+
+
+                setPlayers(
+                    response.data
+                );
+
+                setTotalPlayers(
+                    response.data.length
+                );
+
+            }
+
+
+            // =================================================
+            // NORMAL LIST
+            // =================================================
+
             else {
 
-                await loadPlayers(
+                // If deleting the last player
+                // from a page, move to previous page.
 
-                    currentPage
+                if (
+                    players.length === 1 &&
+                    currentPage > 0
+                ) {
 
-                );
+                    await loadPlayers(
+                        currentPage - 1
+                    );
+
+                }
+
+                else {
+
+                    await loadPlayers(
+                        currentPage
+                    );
+
+                }
 
             }
 
         }
 
-        catch (error) {
+        catch (err) {
 
             console.error(
-
                 "Delete player error:",
-
-                error
-
+                err
             );
-
 
             setError(
-
                 "Failed to delete player."
-
             );
+
+        }
+
+        finally {
+
+            setLoading(false);
 
         }
 
@@ -354,6 +784,17 @@ function Players() {
         }
 
 
+        // Pagination means normal mode
+
+        setIsSearching(false);
+
+        setIsTeamFiltering(false);
+
+        setSelectedTeam("");
+
+        setSearchTerm("");
+
+
         loadPlayers(page);
 
 
@@ -375,9 +816,7 @@ function Players() {
     const handlePreviousPage = () => {
 
         handlePageChange(
-
             currentPage - 1
-
         );
 
     };
@@ -390,9 +829,7 @@ function Players() {
     const handleNextPage = () => {
 
         handlePageChange(
-
             currentPage + 1
-
         );
 
     };
@@ -403,11 +840,8 @@ function Players() {
     // =====================================================
 
     if (
-
         loading &&
-
         players.length === 0
-
     ) {
 
         return (
@@ -415,58 +849,8 @@ function Players() {
             <div>
 
                 <h2>
-
                     Loading players...
-
                 </h2>
-
-            </div>
-
-        );
-
-    }
-
-
-    // =====================================================
-    // FATAL ERROR
-    // =====================================================
-
-    if (
-
-        error &&
-
-        players.length === 0
-
-    ) {
-
-        return (
-
-            <div>
-
-                <h2>
-
-                    {error}
-
-                </h2>
-
-
-                <button
-
-                    onClick={() =>
-
-                        loadPlayers(
-
-                            currentPage
-
-                        )
-
-                    }
-
-                >
-
-                    Try Again
-
-                </button>
 
             </div>
 
@@ -481,12 +865,15 @@ function Players() {
 
     return (
 
-        <div>
+        <div className="player-container">
+
+
+            {/* =================================================
+                TITLE
+            ================================================== */}
 
             <h1>
-
                 IPL Players
-
             </h1>
 
 
@@ -497,37 +884,126 @@ function Players() {
             <PlayerForm
 
                 playerToEdit={
-
                     playerToEdit
-
                 }
 
 
-                onPlayerSaved={async () => {
-
-                    await loadPlayers(
-
-                        currentPage
-
-                    );
-
-                }}
+                onPlayerSaved={
+                    handlePlayerSaved
+                }
 
 
-                onEditComplete={() => {
-
-                    setPlayerToEdit(
-
-                        null
-
-                    );
-
-                }}
+                onEditComplete={
+                    handleEditComplete
+                }
 
             />
 
 
             <hr />
+
+
+            {/* =================================================
+                SEARCH
+            ================================================== */}
+
+            <div className="search-section">
+
+                <h3>
+                    Search Players
+                </h3>
+
+
+                <input
+
+                    type="text"
+
+                    placeholder="Enter player name"
+
+                    value={searchTerm}
+
+                    onChange={(event) =>
+                        setSearchTerm(
+                            event.target.value
+                        )
+                    }
+
+                    onKeyDown={
+                        handleSearchKeyDown
+                    }
+
+                />
+
+
+                <button
+                    onClick={handleSearch}
+                    disabled={loading}
+                >
+                    Search
+                </button>
+
+
+                <button
+                    onClick={handleClearSearch}
+                    disabled={loading}
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            {/* =================================================
+                TEAM FILTER
+            ================================================== */}
+
+            <div className="team-filter-section">
+
+                <h3>
+                    Filter by Team
+                </h3>
+
+
+                <select
+
+                    value={selectedTeam}
+
+                    onChange={(event) =>
+                        handleTeamFilter(
+                            event.target.value
+                        )
+                    }
+
+                    disabled={loading}
+
+                >
+
+                    <option value="">
+                        All Teams
+                    </option>
+
+
+                    {teams.map((team) => (
+
+                        <option
+
+                            key={team.id}
+
+                            value={team.id}
+
+                        >
+
+                            {team.shortName}
+                            {" - "}
+                            {team.name}
+
+                        </option>
+
+                    ))}
+
+                </select>
+
+            </div>
 
 
             {/* =================================================
@@ -537,10 +1013,10 @@ function Players() {
             <p>
 
                 <strong>
-
                     Total Players:
+                </strong>
 
-                </strong>{" "}
+                {" "}
 
                 {totalPlayers}
 
@@ -551,29 +1027,27 @@ function Players() {
                 PAGE INFORMATION
             ================================================== */}
 
-            {totalPages > 0 && (
+            {!isSearching &&
+                !isTeamFiltering &&
+                totalPages > 0 && (
 
-                <p>
+                    <p>
 
-                    Page{" "}
+                        Page{" "}
 
-                    <strong>
+                        <strong>
+                            {currentPage + 1}
+                        </strong>
 
-                        {currentPage + 1}
+                        {" "}of{" "}
 
-                    </strong>{" "}
+                        <strong>
+                            {totalPages}
+                        </strong>
 
-                    of{" "}
+                    </p>
 
-                    <strong>
-
-                        {totalPages}
-
-                    </strong>
-
-                </p>
-
-            )}
+                )}
 
 
             {/* =================================================
@@ -582,24 +1056,28 @@ function Players() {
 
             <button
 
-                onClick={() =>
+                onClick={() => {
+
+                    setIsSearching(false);
+
+                    setIsTeamFiltering(false);
+
+                    setSearchTerm("");
+
+                    setSelectedTeam("");
 
                     loadPlayers(
-
                         currentPage
+                    );
 
-                    )
-
-                }
+                }}
 
                 disabled={loading}
 
             >
 
                 {loading
-
                     ? "Refreshing..."
-
                     : "Refresh Players"}
 
             </button>
@@ -630,139 +1108,162 @@ function Players() {
             {players.length === 0 ? (
 
                 <p>
-
                     No players found.
-
                 </p>
 
             ) : (
 
-                players.map(
+                <table className="player-table">
 
-                    (player) => (
+                    <thead>
 
-                        <div
+                        <tr>
 
-                            key={
+                            <th>
+                                ID
+                            </th>
 
-                                player.playerId
+                            <th>
+                                Jersey
+                            </th>
 
-                            }
+                            <th>
+                                Player Name
+                            </th>
 
-                        >
+                            <th>
+                                Runs
+                            </th>
 
-                            <h3>
+                            <th>
+                                Wickets
+                            </th>
 
-                                {player.playerName}
+                            <th>
+                                Specialization
+                            </th>
 
-                            </h3>
+                            <th>
+                                Team
+                            </th>
 
+                            <th>
+                                Actions
+                            </th>
 
-                            <p>
+                        </tr>
 
-                                Jersey Number:{" "}
-
-                                {player.jerseyNumber}
-
-                            </p>
-
-
-                            <p>
-
-                                Team:{" "}
-
-                                {player.teamName}
-
-                            </p>
-
-
-                            <p>
-
-                                Runs:{" "}
-
-                                {player.runs}
-
-                            </p>
+                    </thead>
 
 
-                            <p>
+                    <tbody>
 
-                                Wickets:{" "}
+                        {players.map(
+                            (player) => (
 
-                                {player.wickets}
-
-                            </p>
-
-
-                            <p>
-
-                                Specialization:{" "}
-
-                                {player.specialization}
-
-                            </p>
-
-
-                            {/* ---------------------------------
-                                EDIT
-                            ---------------------------------- */}
-
-                            <button
-
-                                onClick={() =>
-
-                                    handleEdit(
-
+                                <tr
+                                    key={
                                         player.playerId
+                                    }
+                                >
 
-                                    )
-
-                                }
-
-                                disabled={loading}
-
-                            >
-
-                                Edit
-
-                            </button>
+                                    <td>
+                                        {
+                                            player.playerId
+                                        }
+                                    </td>
 
 
-                            {" "}
+                                    <td>
+                                        {
+                                            player.jerseyNumber
+                                        }
+                                    </td>
 
 
-                            {/* ---------------------------------
-                                DELETE
-                            ---------------------------------- */}
-
-                            <button
-
-                                onClick={() =>
-
-                                    handleDelete(
-
-                                        player.playerId
-
-                                    )
-
-                                }
-
-                                disabled={loading}
-
-                            >
-
-                                Delete
-
-                            </button>
+                                    <td>
+                                        {
+                                            player.playerName
+                                        }
+                                    </td>
 
 
-                            <hr />
+                                    <td>
+                                        {
+                                            player.runs
+                                        }
+                                    </td>
 
-                        </div>
 
-                    )
+                                    <td>
+                                        {
+                                            player.wickets
+                                        }
+                                    </td>
 
-                )
+
+                                    <td>
+                                        {
+                                            player.specialization
+                                        }
+                                    </td>
+
+
+                                    <td>
+                                        {
+                                            player.teamName
+                                        }
+                                    </td>
+
+
+                                    <td>
+
+                                        <button
+
+                                            onClick={() =>
+                                                handleEdit(
+                                                    player.playerId
+                                                )
+                                            }
+
+                                            disabled={loading}
+
+                                        >
+
+                                            Edit
+
+                                        </button>
+
+
+                                        {" "}
+
+
+                                        <button
+
+                                            onClick={() =>
+                                                handleDelete(
+                                                    player.playerId
+                                                )
+                                            }
+
+                                            disabled={loading}
+
+                                        >
+
+                                            Delete
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            )
+                        )}
+
+                    </tbody>
+
+                </table>
 
             )}
 
@@ -771,172 +1272,141 @@ function Players() {
                 PAGINATION
             ================================================== */}
 
-            {totalPages > 1 && (
+            {!isSearching &&
+                !isTeamFiltering &&
+                totalPages > 1 && (
 
-                <div>
+                    <div>
 
-                    <hr />
+                        <hr />
 
 
-                    <h3>
+                        <h3>
+                            Pagination
+                        </h3>
 
-                        Pagination
 
-                    </h3>
+                        {/* Previous */}
 
+                        <button
 
-                    {/* -----------------------------------------
-                        PREVIOUS
-                    ------------------------------------------ */}
+                            onClick={
+                                handlePreviousPage
+                            }
 
-                    <button
+                            disabled={
+                                currentPage === 0 ||
+                                loading
+                            }
 
-                        onClick={
+                        >
 
-                            handlePreviousPage
+                            Previous
 
-                        }
+                        </button>
 
-                        disabled={
 
-                            currentPage === 0 ||
+                        {" "}
 
-                            loading
 
-                        }
+                        {/* Page Numbers */}
 
-                    >
+                        {Array.from(
 
-                        Previous
+                            {
+                                length:
+                                    totalPages
+                            },
 
-                    </button>
+                            (_, index) =>
+                                index
 
+                        ).map(
+                            (page) => (
 
-                    {" "}
+                                <button
 
+                                    key={page}
 
-                    {/* -----------------------------------------
-                        PAGE NUMBERS
-                    ------------------------------------------ */}
+                                    onClick={() =>
+                                        handlePageChange(
+                                            page
+                                        )
+                                    }
 
-                    {Array.from(
+                                    disabled={loading}
 
-                        {
+                                    style={{
 
-                            length: totalPages
+                                        fontWeight:
+                                            currentPage === page
+                                                ? "bold"
+                                                : "normal",
 
-                        },
+                                        margin:
+                                            "0 3px"
 
-                        (_, index) => index
+                                    }}
 
-                    ).map(
+                                >
 
-                        (page) => (
+                                    {page + 1}
 
-                            <button
+                                </button>
 
-                                key={page}
+                            )
+                        )}
 
-                                onClick={() =>
 
-                                    handlePageChange(
+                        {" "}
 
-                                        page
 
-                                    )
+                        {/* Next */}
 
-                                }
+                        <button
 
-                                disabled={loading}
+                            onClick={
+                                handleNextPage
+                            }
 
-                                style={{
+                            disabled={
+                                currentPage ===
+                                    totalPages - 1 ||
+                                loading
+                            }
 
-                                    fontWeight:
+                        >
 
-                                        currentPage === page
+                            Next
 
-                                            ? "bold"
+                        </button>
 
-                                            : "normal",
 
-                                    margin:
+                        <p>
 
-                                        "0 3px"
+                            Showing page{" "}
 
-                                }}
+                            <strong>
+                                {currentPage + 1}
+                            </strong>
 
-                            >
+                            {" "}of{" "}
 
-                                {page + 1}
+                            <strong>
+                                {totalPages}
+                            </strong>
 
-                            </button>
+                        </p>
 
-                        )
+                    </div>
 
-                    )}
-
-
-                    {" "}
-
-
-                    {/* -----------------------------------------
-                        NEXT
-                    ------------------------------------------ */}
-
-                    <button
-
-                        onClick={
-
-                            handleNextPage
-
-                        }
-
-                        disabled={
-
-                            currentPage ===
-
-                                totalPages - 1 ||
-
-                            loading
-
-                        }
-
-                    >
-
-                        Next
-
-                    </button>
-
-
-                    <p>
-
-                        Showing page{" "}
-
-                        <strong>
-
-                            {currentPage + 1}
-
-                        </strong>{" "}
-
-                        of{" "}
-
-                        <strong>
-
-                            {totalPages}
-
-                        </strong>
-
-                    </p>
-
-                </div>
-
-            )}
+                )}
 
         </div>
 
     );
 
-}
+};
 
 
-export default Players;
+export default Player;

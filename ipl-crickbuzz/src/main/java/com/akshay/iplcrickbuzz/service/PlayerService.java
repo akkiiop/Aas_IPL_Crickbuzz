@@ -14,6 +14,8 @@ public interface PlayerService {
 	
 	List<PlayerResponseDTO> searchPlayers(String name);
 	
+	List<PlayerResponseDTO> getPlayersByTeam(Integer teamId);
+	
 	PlayerResponseDTO getPlayerById(Integer id);
 	
 	
