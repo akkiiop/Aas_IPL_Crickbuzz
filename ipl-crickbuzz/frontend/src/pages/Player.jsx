@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 import {
     getAllPlayers,
     getPlayerById,
-    createPlayer,
-    updatePlayer,
     deletePlayer,
     searchPlayers,
     getPlayersByTeam
 } from "../services/playerService";
 
 import PlayerForm from "../components/PlayerForm";
+
+import "../styles/Player.css";
+
 
 const Player = () => {
 
@@ -25,6 +26,8 @@ const Player = () => {
     const [error, setError] = useState("");
 
     const [playerToEdit, setPlayerToEdit] = useState(null);
+
+    const [showPlayerForm, setShowPlayerForm] = useState(false);
 
 
     // =====================================================
@@ -133,52 +136,38 @@ const Player = () => {
 
             if (!data) {
 
-                throw new Error("Empty response from server.");
+                throw new Error(
+                    "Empty response from server."
+                );
 
             }
 
 
             setPlayers(
-
                 Array.isArray(data.content)
-
                     ? data.content
-
                     : []
-
             );
 
 
             setCurrentPage(
-
                 typeof data.number === "number"
-
                     ? data.number
-
                     : page
-
             );
 
 
             setTotalPages(
-
                 typeof data.totalPages === "number"
-
                     ? data.totalPages
-
                     : 0
-
             );
 
 
             setTotalPlayers(
-
                 typeof data.totalElements === "number"
-
                     ? data.totalElements
-
                     : 0
-
             );
 
         }
@@ -236,15 +225,12 @@ const Player = () => {
                 await getPlayerById(id);
 
 
-            console.log(
-                "Player to edit:",
-                response.data
-            );
-
-
             setPlayerToEdit(
                 response.data
             );
+
+
+            setShowPlayerForm(true);
 
 
             window.scrollTo({
@@ -279,12 +265,9 @@ const Player = () => {
 
     const handleSearch = async () => {
 
-        const name = searchTerm.trim();
+        const name =
+            searchTerm.trim();
 
-
-        // -----------------------------
-        // Empty Search
-        // -----------------------------
 
         if (name === "") {
 
@@ -309,13 +292,7 @@ const Player = () => {
 
             setError("");
 
-
-            // Search mode ON
-
             setIsSearching(true);
-
-
-            // Team filter OFF
 
             setIsTeamFiltering(false);
 
@@ -326,22 +303,21 @@ const Player = () => {
                 await searchPlayers(name);
 
 
+            const data = response.data;
+
+
             setPlayers(
-
-                Array.isArray(response.data)
-
-                    ? response.data
-
+                Array.isArray(data)
+                    ? data
                     : []
-
             );
 
 
             setTotalPages(0);
 
             setTotalPlayers(
-                Array.isArray(response.data)
-                    ? response.data.length
+                Array.isArray(data)
+                    ? data.length
                     : 0
             );
 
@@ -381,8 +357,11 @@ const Player = () => {
 
         setIsSearching(false);
 
-        setError("");
+        setIsTeamFiltering(false);
 
+        setSelectedTeam("");
+
+        setError("");
 
         await loadPlayers(0);
 
@@ -415,10 +394,6 @@ const Player = () => {
         setError("");
 
 
-        // =================================================
-        // ALL TEAMS
-        // =================================================
-
         if (teamId === "") {
 
             setIsTeamFiltering(false);
@@ -426,7 +401,6 @@ const Player = () => {
             setIsSearching(false);
 
             setSearchTerm("");
-
 
             await loadPlayers(0);
 
@@ -441,13 +415,7 @@ const Player = () => {
 
             setError("");
 
-
-            // Team filter ON
-
             setIsTeamFiltering(true);
-
-
-            // Search OFF
 
             setIsSearching(false);
 
@@ -458,27 +426,22 @@ const Player = () => {
                 await getPlayersByTeam(teamId);
 
 
+            const data = response.data;
+
+
             setPlayers(
-
-                Array.isArray(response.data)
-
-                    ? response.data
-
+                Array.isArray(data)
+                    ? data
                     : []
-
             );
 
 
             setTotalPages(0);
 
             setTotalPlayers(
-
-                Array.isArray(response.data)
-
-                    ? response.data.length
-
+                Array.isArray(data)
+                    ? data.length
                     : 0
-
             );
 
         }
@@ -518,10 +481,6 @@ const Player = () => {
             setError("");
 
 
-            // =================================================
-            // IF TEAM FILTER IS ACTIVE
-            // =================================================
-
             if (
                 isTeamFiltering &&
                 selectedTeam !== ""
@@ -533,22 +492,25 @@ const Player = () => {
                     );
 
 
+                const data = response.data;
+
+
                 setPlayers(
-                    response.data
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
+
 
                 setTotalPages(0);
 
                 setTotalPlayers(
-                    response.data.length
+                    Array.isArray(data)
+                        ? data.length
+                        : 0
                 );
 
             }
-
-
-            // =================================================
-            // IF SEARCH IS ACTIVE
-            // =================================================
 
             else if (
                 isSearching &&
@@ -561,22 +523,25 @@ const Player = () => {
                     );
 
 
+                const data = response.data;
+
+
                 setPlayers(
-                    response.data
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
+
 
                 setTotalPages(0);
 
                 setTotalPlayers(
-                    response.data.length
+                    Array.isArray(data)
+                        ? data.length
+                        : 0
                 );
 
             }
-
-
-            // =================================================
-            // NORMAL PAGINATION
-            // =================================================
 
             else {
 
@@ -612,6 +577,21 @@ const Player = () => {
 
         setPlayerToEdit(null);
 
+        setShowPlayerForm(false);
+
+    };
+
+
+    // =====================================================
+    // CLOSE PLAYER FORM
+    // =====================================================
+
+    const handleClosePlayerForm = () => {
+
+        setShowPlayerForm(false);
+
+        setPlayerToEdit(null);
+
     };
 
 
@@ -640,13 +620,8 @@ const Player = () => {
 
             setError("");
 
-
             await deletePlayer(id);
 
-
-            // =================================================
-            // TEAM FILTER ACTIVE
-            // =================================================
 
             if (
                 isTeamFiltering &&
@@ -659,20 +634,25 @@ const Player = () => {
                     );
 
 
+                const data = response.data;
+
+
                 setPlayers(
-                    response.data
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
 
+
+                setTotalPages(0);
+
                 setTotalPlayers(
-                    response.data.length
+                    Array.isArray(data)
+                        ? data.length
+                        : 0
                 );
 
             }
-
-
-            // =================================================
-            // SEARCH ACTIVE
-            // =================================================
 
             else if (
                 isSearching &&
@@ -685,25 +665,27 @@ const Player = () => {
                     );
 
 
+                const data = response.data;
+
+
                 setPlayers(
-                    response.data
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
 
+
+                setTotalPages(0);
+
                 setTotalPlayers(
-                    response.data.length
+                    Array.isArray(data)
+                        ? data.length
+                        : 0
                 );
 
             }
 
-
-            // =================================================
-            // NORMAL LIST
-            // =================================================
-
             else {
-
-                // If deleting the last player
-                // from a page, move to previous page.
 
                 if (
                     players.length === 1 &&
@@ -756,35 +738,14 @@ const Player = () => {
 
     const handlePageChange = (page) => {
 
-        if (loading) {
+        if (loading) return;
 
-            return;
+        if (page < 0) return;
 
-        }
+        if (page >= totalPages) return;
 
+        if (page === currentPage) return;
 
-        if (page < 0) {
-
-            return;
-
-        }
-
-
-        if (page >= totalPages) {
-
-            return;
-
-        }
-
-
-        if (page === currentPage) {
-
-            return;
-
-        }
-
-
-        // Pagination means normal mode
 
         setIsSearching(false);
 
@@ -810,33 +771,7 @@ const Player = () => {
 
 
     // =====================================================
-    // PREVIOUS PAGE
-    // =====================================================
-
-    const handlePreviousPage = () => {
-
-        handlePageChange(
-            currentPage - 1
-        );
-
-    };
-
-
-    // =====================================================
-    // NEXT PAGE
-    // =====================================================
-
-    const handleNextPage = () => {
-
-        handlePageChange(
-            currentPage + 1
-        );
-
-    };
-
-
-    // =====================================================
-    // LOADING SCREEN
+    // LOADING
     // =====================================================
 
     if (
@@ -846,11 +781,21 @@ const Player = () => {
 
         return (
 
-            <div>
+            <div className="player-page">
 
-                <h2>
-                    Loading players...
-                </h2>
+                <div className="player-loading">
+
+                    <div className="loading-spinner"></div>
+
+                    <h2>
+                        Loading Players
+                    </h2>
+
+                    <p>
+                        Fetching player statistics...
+                    </p>
+
+                </div>
 
             </div>
 
@@ -865,175 +810,713 @@ const Player = () => {
 
     return (
 
-        <div className="player-container">
+        <div className="player-page">
 
 
             {/* =================================================
-                TITLE
+                HERO
             ================================================== */}
 
-            <h1>
-                IPL Players
-            </h1>
+            <section className="player-hero">
+
+                <div>
+
+                    <span className="player-hero-label">
+                        IPL CRICKBUZZ
+                    </span>
+
+                    <h1>
+                        IPL Players
+                    </h1>
+
+                    <p>
+                        Explore player statistics,
+                        teams and performances.
+                    </p>
+
+                </div>
+
+
+                <div className="player-hero-icon">
+                    🏏
+                </div>
+
+            </section>
 
 
             {/* =================================================
                 PLAYER FORM
             ================================================== */}
 
-            <PlayerForm
+            <section className="player-form-section">
 
-                playerToEdit={
-                    playerToEdit
-                }
+                <div className="player-form-header">
 
+                    <div>
 
-                onPlayerSaved={
-                    handlePlayerSaved
-                }
+                        <span>
 
+                            {playerToEdit
+                                ? "EDIT PLAYER"
+                                : "PLAYER MANAGEMENT"}
 
-                onEditComplete={
-                    handleEditComplete
-                }
-
-            />
+                        </span>
 
 
-            <hr />
+                        <h2>
+
+                            {playerToEdit
+                                ? "Update Player"
+                                : "Add New Player"}
+
+                        </h2>
+
+                    </div>
+
+
+                    <button
+
+                        type="button"
+
+                        className={
+                            showPlayerForm
+                                ? "form-toggle-btn close"
+                                : "form-toggle-btn"
+                        }
+
+                        onClick={() => {
+
+                            if (showPlayerForm) {
+
+                                handleClosePlayerForm();
+
+                            }
+
+                            else {
+
+                                setShowPlayerForm(true);
+
+                            }
+
+                        }}
+
+                    >
+
+                        {showPlayerForm
+                            ? "− Close Form"
+                            : "+ Add Player"}
+
+                    </button>
+
+                </div>
+
+
+                {showPlayerForm && (
+
+                    <div className="player-form-content">
+
+                        <PlayerForm
+
+                            playerToEdit={
+                                playerToEdit
+                            }
+
+                            onPlayerSaved={
+                                handlePlayerSaved
+                            }
+
+                            onEditComplete={
+                                handleEditComplete
+                            }
+
+                        />
+
+                    </div>
+
+                )}
+
+            </section>
 
 
             {/* =================================================
-                SEARCH
+                SEARCH / FILTER
             ================================================== */}
 
-            <div className="search-section">
+            <section className="player-controls">
 
-                <h3>
-                    Search Players
-                </h3>
+                <div className="control-header">
 
+                    <div>
 
-                <input
+                        <span>
+                            PLAYER DATABASE
+                        </span>
 
-                    type="text"
+                        <h2>
+                            Search & Filter
+                        </h2>
 
-                    placeholder="Enter player name"
-
-                    value={searchTerm}
-
-                    onChange={(event) =>
-                        setSearchTerm(
-                            event.target.value
-                        )
-                    }
-
-                    onKeyDown={
-                        handleSearchKeyDown
-                    }
-
-                />
+                    </div>
 
 
-                <button
-                    onClick={handleSearch}
-                    disabled={loading}
-                >
-                    Search
-                </button>
+                    <div className="player-count">
+
+                        <strong>
+                            {totalPlayers}
+                        </strong>
+
+                        <span>
+                            Players
+                        </span>
+
+                    </div>
+
+                </div>
 
 
-                <button
-                    onClick={handleClearSearch}
-                    disabled={loading}
-                >
-                    Clear
-                </button>
+                <div className="controls-row">
 
-            </div>
+
+                    {/* SEARCH */}
+
+                    <div className="search-box">
+
+                        <span className="search-icon">
+                            🔍
+                        </span>
+
+
+                        <input
+
+                            type="text"
+
+                            placeholder="Search player by name..."
+
+                            value={searchTerm}
+
+                            onChange={(event) =>
+                                setSearchTerm(
+                                    event.target.value
+                                )
+                            }
+
+                            onKeyDown={
+                                handleSearchKeyDown
+                            }
+
+                        />
+
+                    </div>
+
+
+                    <button
+
+                        className="search-btn"
+
+                        onClick={
+                            handleSearch
+                        }
+
+                        disabled={loading}
+
+                    >
+
+                        Search
+
+                    </button>
+
+
+                    <button
+
+                        className="clear-btn"
+
+                        onClick={
+                            handleClearSearch
+                        }
+
+                        disabled={loading}
+
+                    >
+
+                        Clear
+
+                    </button>
+
+
+                    {/* TEAM FILTER */}
+
+                    <select
+
+                        className="team-select"
+
+                        value={selectedTeam}
+
+                        onChange={(event) =>
+                            handleTeamFilter(
+                                event.target.value
+                            )
+                        }
+
+                        disabled={loading}
+
+                    >
+
+                        <option value="">
+                            All Teams
+                        </option>
+
+
+                        {teams.map(
+                            (team) => (
+
+                                <option
+                                    key={team.id}
+                                    value={team.id}
+                                >
+
+                                    {team.shortName}
+                                    {" - "}
+                                    {team.name}
+
+                                </option>
+
+                            )
+                        )}
+
+                    </select>
+
+                </div>
+
+            </section>
 
 
             {/* =================================================
-                TEAM FILTER
+                ERROR
             ================================================== */}
 
-            <div className="team-filter-section">
+            {error && (
 
-                <h3>
-                    Filter by Team
-                </h3>
+                <div className="player-error">
 
+                    ⚠️ {error}
 
-                <select
+                </div>
 
-                    value={selectedTeam}
-
-                    onChange={(event) =>
-                        handleTeamFilter(
-                            event.target.value
-                        )
-                    }
-
-                    disabled={loading}
-
-                >
-
-                    <option value="">
-                        All Teams
-                    </option>
+            )}
 
 
-                    {teams.map((team) => (
+            {/* =================================================
+                PLAYER LIST
+            ================================================== */}
 
-                        <option
+            <section className="player-list-section">
 
-                            key={team.id}
+                <div className="list-header">
 
-                            value={team.id}
+                    <div>
+
+                        <span>
+                            SQUAD
+                        </span>
+
+                        <h2>
+                            Player Statistics
+                        </h2>
+
+                    </div>
+
+
+                    <button
+
+                        className="refresh-btn"
+
+                        onClick={() => {
+
+                            setIsSearching(false);
+
+                            setIsTeamFiltering(false);
+
+                            setSearchTerm("");
+
+                            setSelectedTeam("");
+
+                            loadPlayers(
+                                currentPage
+                            );
+
+                        }}
+
+                        disabled={loading}
+
+                    >
+
+                        ↻
+
+                        {loading
+                            ? " Refreshing..."
+                            : " Refresh"}
+
+                    </button>
+
+                </div>
+
+
+                {players.length === 0 ? (
+
+                    <div className="no-players">
+
+                        <div>
+                            🏏
+                        </div>
+
+                        <h3>
+                            No Players Found
+                        </h3>
+
+                        <p>
+                            Try changing your search
+                            or team filter.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="table-wrapper">
+
+                        <table className="player-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        #
+                                    </th>
+
+                                    <th>
+                                        PLAYER
+                                    </th>
+
+                                    <th>
+                                        TEAM
+                                    </th>
+
+                                    <th>
+                                        ROLE
+                                    </th>
+
+                                    <th>
+                                        RUNS
+                                    </th>
+
+                                    <th>
+                                        WICKETS
+                                    </th>
+
+                                    <th>
+                                        ACTIONS
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {players.map(
+                                    (player) => (
+
+                                        <tr
+                                            key={
+                                                player.playerId
+                                            }
+                                        >
+
+                                            <td>
+
+                                                <span className="player-id">
+
+                                                    {
+                                                        player.playerId
+                                                    }
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <div className="player-name-cell">
+
+                                                    <div className="player-mini-avatar">
+
+                                                        {
+                                                            player.playerName
+                                                                ?.charAt(0)
+                                                                ?.toUpperCase()
+                                                        }
+
+                                                    </div>
+
+
+                                                    <div>
+
+                                                        <strong>
+                                                            {
+                                                                player.playerName
+                                                            }
+                                                        </strong>
+
+
+                                                        <small>
+
+                                                            Jersey #
+
+                                                            {" "}
+
+                                                            {
+                                                                player.jerseyNumber
+                                                            }
+
+                                                        </small>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span className="team-badge">
+
+                                                    {
+                                                        player.teamName
+                                                    }
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span className="role-badge">
+
+                                                    {
+                                                        player.specialization
+                                                    }
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <strong className="runs-value">
+
+                                                    {
+                                                        player.runs
+                                                    }
+
+                                                </strong>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <strong className="wickets-value">
+
+                                                    {
+                                                        player.wickets
+                                                    }
+
+                                                </strong>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <div className="action-buttons">
+
+                                                    <button
+
+                                                        className="edit-player-btn"
+
+                                                        onClick={() =>
+                                                            handleEdit(
+                                                                player.playerId
+                                                            )
+                                                        }
+
+                                                        disabled={
+                                                            loading
+                                                        }
+
+                                                    >
+
+                                                        ✏ Edit
+
+                                                    </button>
+
+
+                                                    <button
+
+                                                        className="delete-player-btn"
+
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                player.playerId
+                                                            )
+                                                        }
+
+                                                        disabled={
+                                                            loading
+                                                        }
+
+                                                    >
+
+                                                        🗑 Delete
+
+                                                    </button>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    )
+                                )}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                )}
+
+            </section>
+
+
+            {/* =================================================
+                PAGINATION
+            ================================================== */}
+
+            {!isSearching &&
+                !isTeamFiltering &&
+                totalPages > 1 && (
+
+                    <section className="pagination-section">
+
+                        <button
+
+                            className="pagination-btn"
+
+                            onClick={() =>
+                                handlePageChange(
+                                    currentPage - 1
+                                )
+                            }
+
+                            disabled={
+                                currentPage === 0 ||
+                                loading
+                            }
 
                         >
 
-                            {team.shortName}
-                            {" - "}
-                            {team.name}
+                            ← Previous
 
-                        </option>
-
-                    ))}
-
-                </select>
-
-            </div>
+                        </button>
 
 
-            {/* =================================================
-                PLAYER COUNT
-            ================================================== */}
+                        <div className="page-numbers">
 
-            <p>
+                            {Array.from(
+                                {
+                                    length:
+                                        totalPages
+                                },
+                                (_, index) =>
+                                    index
+                            ).map(
+                                (page) => (
 
-                <strong>
-                    Total Players:
-                </strong>
+                                    <button
 
-                {" "}
+                                        key={page}
 
-                {totalPlayers}
+                                        className={
+                                            currentPage === page
+                                                ? "page-number active"
+                                                : "page-number"
+                                        }
 
-            </p>
+                                        onClick={() =>
+                                            handlePageChange(
+                                                page
+                                            )
+                                        }
+
+                                        disabled={
+                                            loading
+                                        }
+
+                                    >
+
+                                        {page + 1}
+
+                                    </button>
+
+                                )
+                            )}
+
+                        </div>
 
 
-            {/* =================================================
-                PAGE INFORMATION
-            ================================================== */}
+                        <button
+
+                            className="pagination-btn"
+
+                            onClick={() =>
+                                handlePageChange(
+                                    currentPage + 1
+                                )
+                            }
+
+                            disabled={
+                                currentPage ===
+                                    totalPages - 1 ||
+                                loading
+                            }
+
+                        >
+
+                            Next →
+
+                        </button>
+
+                    </section>
+
+                )}
+
 
             {!isSearching &&
                 !isTeamFiltering &&
                 totalPages > 0 && (
 
-                    <p>
+                    <p className="pagination-info">
 
-                        Page{" "}
+                        Showing page{" "}
 
                         <strong>
                             {currentPage + 1}
@@ -1051,356 +1534,21 @@ const Player = () => {
 
 
             {/* =================================================
-                REFRESH
+                FOOTER
             ================================================== */}
 
-            <button
+            <footer className="player-footer">
 
-                onClick={() => {
+                <strong>
+                    IPL Crickbuzz
+                </strong>
 
-                    setIsSearching(false);
+                <span>
+                    Player Management & Statistics
+                </span>
 
-                    setIsTeamFiltering(false);
+            </footer>
 
-                    setSearchTerm("");
-
-                    setSelectedTeam("");
-
-                    loadPlayers(
-                        currentPage
-                    );
-
-                }}
-
-                disabled={loading}
-
-            >
-
-                {loading
-                    ? "Refreshing..."
-                    : "Refresh Players"}
-
-            </button>
-
-
-            <hr />
-
-
-            {/* =================================================
-                ERROR
-            ================================================== */}
-
-            {error && (
-
-                <p>
-
-                    {error}
-
-                </p>
-
-            )}
-
-
-            {/* =================================================
-                PLAYER LIST
-            ================================================== */}
-
-            {players.length === 0 ? (
-
-                <p>
-                    No players found.
-                </p>
-
-            ) : (
-
-                <table className="player-table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                ID
-                            </th>
-
-                            <th>
-                                Jersey
-                            </th>
-
-                            <th>
-                                Player Name
-                            </th>
-
-                            <th>
-                                Runs
-                            </th>
-
-                            <th>
-                                Wickets
-                            </th>
-
-                            <th>
-                                Specialization
-                            </th>
-
-                            <th>
-                                Team
-                            </th>
-
-                            <th>
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        {players.map(
-                            (player) => (
-
-                                <tr
-                                    key={
-                                        player.playerId
-                                    }
-                                >
-
-                                    <td>
-                                        {
-                                            player.playerId
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        {
-                                            player.jerseyNumber
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        {
-                                            player.playerName
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        {
-                                            player.runs
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        {
-                                            player.wickets
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        {
-                                            player.specialization
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        {
-                                            player.teamName
-                                        }
-                                    </td>
-
-
-                                    <td>
-
-                                        <button
-
-                                            onClick={() =>
-                                                handleEdit(
-                                                    player.playerId
-                                                )
-                                            }
-
-                                            disabled={loading}
-
-                                        >
-
-                                            Edit
-
-                                        </button>
-
-
-                                        {" "}
-
-
-                                        <button
-
-                                            onClick={() =>
-                                                handleDelete(
-                                                    player.playerId
-                                                )
-                                            }
-
-                                            disabled={loading}
-
-                                        >
-
-                                            Delete
-
-                                        </button>
-
-                                    </td>
-
-                                </tr>
-
-                            )
-                        )}
-
-                    </tbody>
-
-                </table>
-
-            )}
-
-
-            {/* =================================================
-                PAGINATION
-            ================================================== */}
-
-            {!isSearching &&
-                !isTeamFiltering &&
-                totalPages > 1 && (
-
-                    <div>
-
-                        <hr />
-
-
-                        <h3>
-                            Pagination
-                        </h3>
-
-
-                        {/* Previous */}
-
-                        <button
-
-                            onClick={
-                                handlePreviousPage
-                            }
-
-                            disabled={
-                                currentPage === 0 ||
-                                loading
-                            }
-
-                        >
-
-                            Previous
-
-                        </button>
-
-
-                        {" "}
-
-
-                        {/* Page Numbers */}
-
-                        {Array.from(
-
-                            {
-                                length:
-                                    totalPages
-                            },
-
-                            (_, index) =>
-                                index
-
-                        ).map(
-                            (page) => (
-
-                                <button
-
-                                    key={page}
-
-                                    onClick={() =>
-                                        handlePageChange(
-                                            page
-                                        )
-                                    }
-
-                                    disabled={loading}
-
-                                    style={{
-
-                                        fontWeight:
-                                            currentPage === page
-                                                ? "bold"
-                                                : "normal",
-
-                                        margin:
-                                            "0 3px"
-
-                                    }}
-
-                                >
-
-                                    {page + 1}
-
-                                </button>
-
-                            )
-                        )}
-
-
-                        {" "}
-
-
-                        {/* Next */}
-
-                        <button
-
-                            onClick={
-                                handleNextPage
-                            }
-
-                            disabled={
-                                currentPage ===
-                                    totalPages - 1 ||
-                                loading
-                            }
-
-                        >
-
-                            Next
-
-                        </button>
-
-
-                        <p>
-
-                            Showing page{" "}
-
-                            <strong>
-                                {currentPage + 1}
-                            </strong>
-
-                            {" "}of{" "}
-
-                            <strong>
-                                {totalPages}
-                            </strong>
-
-                        </p>
-
-                    </div>
-
-                )}
 
         </div>
 

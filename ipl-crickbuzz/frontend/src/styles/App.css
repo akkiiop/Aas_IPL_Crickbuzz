@@ -1,0 +1,428 @@
+/* =========================================================
+   APPLICATION
+========================================================= */
+
+.app {
+    min-height: 100vh;
+    background: #f4f6fb;
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar {
+    width: 100%;
+    height: 72px;
+
+    background: linear-gradient(
+        135deg,
+        #07152f 0%,
+        #0b1f42 100%
+    );
+
+    border-bottom: 3px solid #f97316;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 4px 20px rgba(7, 21, 47, 0.20);
+}
+
+
+/* =========================================================
+   NAVBAR CONTAINER
+========================================================= */
+
+.navbar-container {
+    width: 100%;
+    max-width: 1400px;
+
+    height: 100%;
+
+    margin: 0 auto;
+    padding: 0 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-1px);
+}
+
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #f97316,
+        #ef4444
+    );
+
+    font-size: 21px;
+
+    box-shadow:
+        0 4px 12px rgba(249, 115, 22, 0.28);
+}
+
+
+.brand-text {
+    color: #ffffff;
+
+    font-size: 21px;
+    font-weight: 800;
+
+    letter-spacing: -0.4px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+.nav-link {
+    position: relative;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #b8c3d6;
+
+    padding: 10px 17px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.nav-link:hover {
+    color: #ffffff;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   ACTIVE NAVIGATION
+========================================================= */
+
+.nav-link.active {
+    color: #07152f;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+
+.nav-link.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+
+    bottom: -12px;
+
+    width: 28px;
+    height: 3px;
+
+    border-radius: 5px;
+
+    background: #f97316;
+}
+
+
+/* =========================================================
+   PAGE CONTENT
+========================================================= */
+
+.app-content {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+}
+
+
+/* =========================================================
+   MOBILE NAVIGATION
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .navbar {
+        height: auto;
+    }
+
+    .navbar-container {
+        min-height: 72px;
+
+        padding: 12px 18px;
+
+        flex-direction: column;
+        gap: 12px;
+    }
+
+
+    .navbar-brand {
+        width: 100%;
+        justify-content: center;
+    }
+
+
+    .navbar-links {
+        width: 100%;
+
+        justify-content: center;
+
+        gap: 5px;
+    }
+
+
+    .nav-link {
+        flex: 1;
+
+        text-align: center;
+
+        padding: 9px 8px;
+
+        font-size: 13px;
+    }
+
+
+    .nav-link.active::after {
+        bottom: -8px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .navbar-container {
+        padding: 10px 12px;
+    }
+
+
+    .brand-text {
+        font-size: 18px;
+    }
+
+
+    .brand-icon {
+        width: 38px;
+        height: 38px;
+
+        font-size: 19px;
+    }
+
+
+    .nav-link {
+        padding: 8px 5px;
+
+        font-size: 12px;
+    }
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+    margin-top: 40px;
+
+    background: #07152f;
+
+    color: #ffffff;
+}
+
+
+.footer-container {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    padding: 32px 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+
+/* =========================================================
+   FOOTER BRAND
+========================================================= */
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.footer-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #f97316,
+        #ef4444
+    );
+
+    font-size: 20px;
+}
+
+
+.footer-brand h3 {
+    margin: 0 0 4px;
+
+    font-size: 17px;
+    font-weight: 800;
+}
+
+
+.footer-brand p {
+    margin: 0;
+
+    color: #aebbd0;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   TECHNOLOGIES
+========================================================= */
+
+.footer-right {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+.footer-right span {
+    padding: 7px 11px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius: 6px;
+
+    color: #cbd5e1;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+
+    padding: 15px 20px;
+
+    text-align: center;
+
+    color: #8f9db4;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   FOOTER MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .footer-container {
+        padding: 28px 18px;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        text-align: center;
+    }
+
+
+    .footer-brand {
+        flex-direction: column;
+    }
+
+
+    .footer-right {
+        justify-content: center;
+    }
+}
