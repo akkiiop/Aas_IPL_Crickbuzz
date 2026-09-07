@@ -14,33 +14,33 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Player {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int playerId;
-	
+
 	@Min(value = 1, message = "Jercey number must be at least 1")
 	@Max(value = 999, message = "Jercey number must not exceed 999")
 	private int jerseyNumber;
-	
+
 	@NotBlank(message = "Player name is required")
 	private String playerName;
-	
+
 	@Min(value = 0, message = "Runs cannot be negative")
 	private int runs;
-	
+
 	@Min(value = 0, message = "Wickets cannot be negative")
 	private int wickets;
-	
+
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "team_id")
 	private Team team;
-	
+
 	private String specialization;
-	
+
 	public Player() {
-		
+
 	}
 
 	public int getPlayerId() {
@@ -83,8 +83,6 @@ public class Player {
 		this.wickets = wickets;
 	}
 
-	
-
 	public Team getTeam() {
 		return team;
 	}
@@ -101,16 +99,4 @@ public class Player {
 		this.specialization = specialization;
 	}
 
-	@Override
-	public String toString() {
-		return "Player [playerId=" + playerId + ", jerseyNumber=" + jerseyNumber + ", playerName=" + playerName
-				+ ", runs=" + runs + ", wickets=" + wickets + ", team=" + team + ", specialization=" + specialization
-				+ ", getPlayerId()=" + getPlayerId() + ", getJerseyNumber()=" + getJerseyNumber() + ", getPlayerName()="
-				+ getPlayerName() + ", getRuns()=" + getRuns() + ", getWickets()=" + getWickets() + ", getTeam()="
-				+ getTeam() + ", getSpecialization()=" + getSpecialization() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
-	}
-
-	
-	
 }

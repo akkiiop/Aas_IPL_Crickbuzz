@@ -11,16 +11,8 @@ import com.akshay.iplcrickbuzz.entity.Player;
 import com.akshay.iplcrickbuzz.entity.Team;
 import com.akshay.iplcrickbuzz.exception.TeamNotFoundException;
 import com.akshay.iplcrickbuzz.repository.TeamRepository;
-import java.util.List;
+
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
-import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
-import com.akshay.iplcrickbuzz.dto.TeamRequestDTO;
-import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
-import com.akshay.iplcrickbuzz.entity.Team;
-import com.akshay.iplcrickbuzz.repository.TeamRepository;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -50,7 +42,6 @@ public class TeamServiceImpl implements TeamService {
         return convertToResponseDTO(savedTeam);
     }
 
-
     // =========================
     // GET ALL TEAMS
     // =========================
@@ -64,7 +55,6 @@ public class TeamServiceImpl implements TeamService {
                 .collect(Collectors.toList());
     }
 
-
     // =========================
     // GET TEAM BY ID
     // =========================
@@ -72,13 +62,10 @@ public class TeamServiceImpl implements TeamService {
     public TeamResponseDTO getTeamById(Integer id) {
 
         Team team = teamRepository.findById(id)
-                .orElseThrow(() ->
-                        new TeamNotFoundException("Team not found with id: " + id)
-                );
+                .orElseThrow(() -> new TeamNotFoundException("Team not found with id: " + id));
 
         return convertToResponseDTO(team);
     }
-
 
     // =========================
     // UPDATE TEAM
@@ -89,9 +76,7 @@ public class TeamServiceImpl implements TeamService {
             TeamRequestDTO request) {
 
         Team team = teamRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Team not found with id: " + id)
-                );
+                .orElseThrow(() -> new TeamNotFoundException("Team not found with id: " + id));
 
         team.setTeamName(request.getTeamName());
         team.setShortName(request.getShortName());
@@ -104,7 +89,6 @@ public class TeamServiceImpl implements TeamService {
         return convertToResponseDTO(updatedTeam);
     }
 
-
     // =========================
     // DELETE TEAM
     // =========================
@@ -113,14 +97,12 @@ public class TeamServiceImpl implements TeamService {
 
         if (!teamRepository.existsById(id)) {
 
-            throw new RuntimeException(
-                    "Team not found with id: " + id
-            );
+            throw new TeamNotFoundException(
+                    "Team not found with id: " + id);
         }
 
         teamRepository.deleteById(id);
     }
-
 
     // =========================
     // ENTITY → RESPONSE DTO
@@ -138,24 +120,20 @@ public class TeamServiceImpl implements TeamService {
 
         return response;
     }
-    
+
     @Override
     public List<PlayerResponseDTO> getPlayersByTeamId(Integer teamId) {
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Team not found with id: " + teamId
-                        )
-                );
+                .orElseThrow(() -> new TeamNotFoundException(
+                        "Team not found with id: " + teamId));
 
         return team.getPlayers()
                 .stream()
                 .map(this::convertPlayerToResponseDTO)
                 .toList();
     }
-    
-    
+
     private PlayerResponseDTO convertPlayerToResponseDTO(Player player) {
 
         PlayerResponseDTO dto = new PlayerResponseDTO();
