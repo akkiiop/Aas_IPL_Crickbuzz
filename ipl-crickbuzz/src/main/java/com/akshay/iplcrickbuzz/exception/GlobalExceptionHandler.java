@@ -1,4 +1,6 @@
 package com.akshay.iplcrickbuzz.exception;
+import com.akshay.iplcrickbuzz.exception.MatchNotFoundException;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,5 +79,23 @@ public class GlobalExceptionHandler {
 		            .status(HttpStatus.NOT_FOUND)
 		            .body(error);
 		}
+		
+		
+		@ExceptionHandler(MatchNotFoundException.class)
+		public ResponseEntity<ErrorResponseDTO> handleMatchNotFoundException(
+		        MatchNotFoundException ex, 
+		        HttpServletRequest request) {
+
+		    ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+		            LocalDateTime.now(),
+		            HttpStatus.NOT_FOUND.value(),
+		            "Not Found",
+		            ex.getMessage(),
+		            request.getRequestURI()
+		    );
+
+		    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+		}
+
 	
 }
