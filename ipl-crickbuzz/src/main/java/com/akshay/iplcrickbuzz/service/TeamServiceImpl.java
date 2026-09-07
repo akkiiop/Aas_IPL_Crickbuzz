@@ -13,6 +13,7 @@ import com.akshay.iplcrickbuzz.exception.TeamNotFoundException;
 import com.akshay.iplcrickbuzz.repository.TeamRepository;
 
 import java.util.stream.Collectors;
+import com.akshay.iplcrickbuzz.mapper.*;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -130,26 +131,9 @@ public class TeamServiceImpl implements TeamService {
 
         return team.getPlayers()
                 .stream()
-                .map(this::convertPlayerToResponseDTO)
+                .map(PlayerMapper::toDTO)
                 .toList();
     }
 
-    private PlayerResponseDTO convertPlayerToResponseDTO(Player player) {
-
-        PlayerResponseDTO dto = new PlayerResponseDTO();
-
-        dto.setPlayerId(player.getPlayerId());
-        dto.setJerseyNumber(player.getJerseyNumber());
-        dto.setPlayerName(player.getPlayerName());
-        dto.setRuns(player.getRuns());
-        dto.setWickets(player.getWickets());
-
-        if (player.getTeam() != null) {
-            dto.setTeamName(player.getTeam().getTeamName());
-        }
-
-        dto.setSpecialization(player.getSpecialization());
-
-        return dto;
-    }
+    
 }

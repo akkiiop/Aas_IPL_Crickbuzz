@@ -12,6 +12,7 @@ import com.akshay.iplcrickbuzz.entity.Player;
 import com.akshay.iplcrickbuzz.entity.Team;
 import com.akshay.iplcrickbuzz.exception.PlayerNotFoundException;
 import com.akshay.iplcrickbuzz.exception.TeamNotFoundException;
+import com.akshay.iplcrickbuzz.mapper.PlayerMapper;
 import com.akshay.iplcrickbuzz.repository.PlayerRepository;
 import com.akshay.iplcrickbuzz.repository.TeamRepository;
 
@@ -30,29 +31,7 @@ public class PlayerServiceImpl implements PlayerService {
                 this.teamRepository = teamRepository;
         }
 
-        // =====================================================
-        // ENTITY → RESPONSE DTO
-        // =====================================================
-
-        private PlayerResponseDTO convertToResponseDTO(Player player) {
-
-                PlayerResponseDTO dto = new PlayerResponseDTO();
-
-                dto.setPlayerId(player.getPlayerId());
-                dto.setJerseyNumber(player.getJerseyNumber());
-                dto.setPlayerName(player.getPlayerName());
-                dto.setRuns(player.getRuns());
-                dto.setWickets(player.getWickets());
-
-                // Get team name through Team relationship
-                if (player.getTeam() != null) {
-                        dto.setTeamName(player.getTeam().getTeamName());
-                }
-
-                dto.setSpecialization(player.getSpecialization());
-
-                return dto;
-        }
+       
 
         // =====================================================
         // CREATE PLAYER
@@ -80,7 +59,7 @@ public class PlayerServiceImpl implements PlayerService {
 
                 Player savedPlayer = playerRepository.save(player);
 
-                return convertToResponseDTO(savedPlayer);
+                return PlayerMapper.toDTO(savedPlayer);
         }
 
         // =====================================================
@@ -92,7 +71,7 @@ public class PlayerServiceImpl implements PlayerService {
 
                 Page<Player> players = playerRepository.findAll(pageable);
 
-                return players.map(this::convertToResponseDTO);
+                return players.map(PlayerMapper::toDTO);
         }
 
         // =====================================================
@@ -106,7 +85,7 @@ public class PlayerServiceImpl implements PlayerService {
                                 .orElseThrow(() -> new PlayerNotFoundException(
                                                 "Player not found with id: " + id));
 
-                return convertToResponseDTO(player);
+                return PlayerMapper.toDTO(player);
         }
 
         // =====================================================
@@ -139,7 +118,7 @@ public class PlayerServiceImpl implements PlayerService {
 
                 Player updatedPlayer = playerRepository.save(player);
 
-                return convertToResponseDTO(updatedPlayer);
+                return PlayerMapper.toDTO(updatedPlayer);
         }
 
         // =====================================================
@@ -163,7 +142,7 @@ public class PlayerServiceImpl implements PlayerService {
                                 .findByPlayerNameContainingIgnoreCase(name);
 
                 return players.stream()
-                                .map(this::convertToResponseDTO)
+                                .map(PlayerMapper::toDTO)
                                 .toList();
         }
 
@@ -173,7 +152,7 @@ public class PlayerServiceImpl implements PlayerService {
                 List<Player> players = playerRepository.findByTeam_TeamId(teamId);
 
                 return players.stream()
-                                .map(this::convertToResponseDTO)
+                                .map(PlayerMapper::toDTO)
                                 .toList();
         }
 }
