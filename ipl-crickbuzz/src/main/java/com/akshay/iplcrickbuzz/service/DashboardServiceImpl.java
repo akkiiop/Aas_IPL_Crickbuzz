@@ -2,6 +2,9 @@ package com.akshay.iplcrickbuzz.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.akshay.iplcrickbuzz.dto.DashboardResponseDTO;
@@ -12,6 +15,12 @@ import com.akshay.iplcrickbuzz.repository.TeamRepository;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
+	
+	@Autowired
+	private PerformanceRepository performanceRepository;
+
+	@Autowired
+	private MatchRepository matchRepository;
 
     private final PlayerRepository playerRepository;
     private final TeamRepository teamRepository;
@@ -38,12 +47,15 @@ public class DashboardServiceImpl implements DashboardService {
 
         long totalWickets =
                 playerRepository.getTotalWickets();
+        
+        long totalMatches = matchRepository.count();
 
+        
         List<Player> topRunScorers =
-                playerRepository.findTopRunScorer();
+                performanceRepository.findTopRunScorerFromPerformances(PageRequest.of(0, 1));
 
         List<Player> topWicketTakers =
-                playerRepository.findTopWicketTaker();
+                performanceRepository.findTopWicketTakerFromPerformances(PageRequest.of(0, 1));
 
         PlayerResponseDTO topRunScorer =
                 topRunScorers.isEmpty()
@@ -57,7 +69,7 @@ public class DashboardServiceImpl implements DashboardService {
                         : convertToResponseDTO(
                                 topWicketTakers.get(0));
 
-        return new DashboardResponseDTO(
+        DashboardResponseDTO response = new DashboardResponseDTO(
                 totalTeams,
                 totalPlayers,
                 totalRuns,
@@ -65,6 +77,10 @@ public class DashboardServiceImpl implements DashboardService {
                 topRunScorer,
                 topWicketTaker
         );
+        response.setTotalMatches(totalMatches);
+        
+        return response;
+        
     }
 
     private PlayerResponseDTO convertToResponseDTO(

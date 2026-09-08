@@ -9,7 +9,8 @@ public class DashboardResponseDTO {
     
     private PlayerResponseDTO topRunScorer;
     private PlayerResponseDTO topWicketTaker;
-    
+    private long totalMatches;
+
     public DashboardResponseDTO() {
     }
 
@@ -78,4 +79,14 @@ public class DashboardResponseDTO {
             PlayerResponseDTO topWicketTaker) {
         this.topWicketTaker = topWicketTaker;
     }
+
+	public long getTotalMatches() {
+		return totalMatches;
+	}
+
+	public void setTotalMatches(long totalMatches) {
+		this.totalMatches = totalMatches;
+	}
+    
+    
 }
