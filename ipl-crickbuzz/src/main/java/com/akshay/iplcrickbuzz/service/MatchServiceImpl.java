@@ -3,12 +3,15 @@ package com.akshay.iplcrickbuzz.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.akshay.iplcrickbuzz.dto.MatchRequestDTO;
 import com.akshay.iplcrickbuzz.dto.MatchResponseDTO;
+import com.akshay.iplcrickbuzz.dto.PerformanceResponseDTO;
+import com.akshay.iplcrickbuzz.dto.ScorecardResponseDTO;
 import com.akshay.iplcrickbuzz.entity.Match;
 import com.akshay.iplcrickbuzz.entity.Team;
 import com.akshay.iplcrickbuzz.exception.MatchNotFoundException;
@@ -21,6 +24,10 @@ public class MatchServiceImpl implements MatchService {
 
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
+    
+    
+    @Autowired
+    private PerformanceService performanceService;
 
     public MatchServiceImpl(MatchRepository matchRepository, TeamRepository teamRepository) {
         this.matchRepository = matchRepository;
@@ -126,4 +133,28 @@ public class MatchServiceImpl implements MatchService {
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
+    
+    
+    @Override
+    public ScorecardResponseDTO getScorecard(Integer matchId) {
+        MatchResponseDTO matchDto = this.getMatchById(matchId);
+
+        List<PerformanceResponseDTO> allPerformances = performanceService.getPerformancesByMatch(matchId);
+
+        List<PerformanceResponseDTO> team1Stats = allPerformances.stream()
+                .filter(p -> p.getTeamName().equals(matchDto.getTeam1Name())) 
+                .collect(Collectors.toList());
+
+        List<PerformanceResponseDTO> team2Stats = allPerformances.stream()
+                .filter(p -> p.getTeamName().equals(matchDto.getTeam2Name())) 
+                .collect(Collectors.toList());
+
+        ScorecardResponseDTO scorecard = new ScorecardResponseDTO();
+        scorecard.setMatch(matchDto);
+        scorecard.setTeam1Performances(team1Stats);
+        scorecard.setTeam2Performances(team2Stats);
+
+        return scorecard;
+    }
+
 }

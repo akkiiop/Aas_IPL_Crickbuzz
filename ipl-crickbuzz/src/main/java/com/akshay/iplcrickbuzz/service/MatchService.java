@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.akshay.iplcrickbuzz.dto.MatchRequestDTO;
 import com.akshay.iplcrickbuzz.dto.MatchResponseDTO;
+import com.akshay.iplcrickbuzz.dto.ScorecardResponseDTO;
 
 public interface MatchService {
 	MatchResponseDTO saveMatch(MatchRequestDTO request);
@@ -19,4 +20,7 @@ public interface MatchService {
 	void deleteMatch(Integer id);
 	
 	List<MatchResponseDTO> getMatchesByStatus(String status);
+	
+	ScorecardResponseDTO getScorecard(Integer matchId);
+
 }

@@ -1,5 +1,6 @@
 package com.akshay.iplcrickbuzz.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,14 +13,15 @@ public class PlayerPerformance {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer perfromanceId;
+	@Column(name = "perfromance_id")
+	private Integer performanceId;
 	
 	@ManyToOne
 	@JoinColumn(name = "match_id")
 	private Match match;
 	
 	@ManyToOne
-	@JoinColumn(name = "palyer_id")
+	@JoinColumn(name = "player_id")
 	private Player player;
 	
 	private Integer runsScored;
@@ -34,12 +36,13 @@ public class PlayerPerformance {
 	
 	private Integer catches;
 
-	public Integer getPerfromanceId() {
-		return perfromanceId;
+	public Integer getPerformanceId() {
+	    return performanceId;
 	}
 
-	public void setPerfromanceId(Integer perfromanceId) {
-		this.perfromanceId = perfromanceId;
+
+	public void setPerformanceId(Integer performanceId) {
+		this.performanceId = performanceId;
 	}
 
 	public Match getMatch() {
@@ -106,10 +109,7 @@ public class PlayerPerformance {
 		this.catches = catches;
 	}
 
-	public Integer getPerformanceId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	
 	
 }

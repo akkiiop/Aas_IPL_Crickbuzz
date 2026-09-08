@@ -17,7 +17,7 @@ import com.akshay.iplcrickbuzz.dto.PerformanceRequestDTO;
 import com.akshay.iplcrickbuzz.dto.PerformanceResponseDTO;
 import com.akshay.iplcrickbuzz.service.PerformanceService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/performances")

@@ -43,12 +43,14 @@ public class PerformanceServiceImpl implements PerformanceService {
 	    performance.setMatch(match);
 	    performance.setPlayer(player);
 	    performance.setRunsScored(dto.getRunsScored());
-	    // ... (You should set the rest of the stats from the dto: balls, wickets, etc.) ...
+	    performance.setBallsFaced(dto.getBallsFaced());
+	    performance.setWicketsTaken(dto.getWicketsTaken());
+	    performance.setOversBowled(dto.getOversBowled());
+	    performance.setRunsConceded(dto.getRunsConceded());
+	    performance.setCatches(dto.getCatches());
 
-	    // Step 3: Save to Database
 	    PlayerPerformance savedPerformance = performanceRepository.save(performance);
 
-	    // Step 4: Convert saved Entity back to a nice Response DTO using our helper method!
 	    return mapToResponseDTO(savedPerformance);
 	}
 
@@ -60,7 +62,11 @@ public class PerformanceServiceImpl implements PerformanceService {
 	    response.setPerformanceId(performance.getPerformanceId());
 	    response.setMatchId(performance.getMatch().getMatchId());
 	    response.setRunsScored(performance.getRunsScored());
-
+	    response.setBallsFaced(performance.getBallsFaced());
+	    response.setWicketsTaken(performance.getWicketsTaken());
+	    response.setOversBowled(performance.getOversBowled());
+	    response.setRunsConceded(performance.getRunsConceded());
+	    response.setCatches(performance.getCatches());
 	    response.setPlayerName(performance.getPlayer().getPlayerName());
 	    response.setTeamName(performance.getPlayer().getTeam().getTeamName());
 	    
@@ -74,7 +80,7 @@ public class PerformanceServiceImpl implements PerformanceService {
 		List<PlayerPerformance> performances = performanceRepository.findByMatch_MatchId(matchId);
 	    
 	    return performances.stream()
-	            .map(this::mapToResponseDTO) // This calls your helper method on every single item!
+	            .map(this::mapToResponseDTO) 
 	            .collect(Collectors.toList());
 	}
 

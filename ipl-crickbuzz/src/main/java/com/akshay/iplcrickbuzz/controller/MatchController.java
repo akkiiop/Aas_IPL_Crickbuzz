@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.akshay.iplcrickbuzz.dto.MatchRequestDTO;
 import com.akshay.iplcrickbuzz.dto.MatchResponseDTO;
+import com.akshay.iplcrickbuzz.dto.ScorecardResponseDTO;
 import com.akshay.iplcrickbuzz.service.MatchService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,5 +72,12 @@ public class MatchController {
         List<MatchResponseDTO> response = matchService.getMatchesByStatus(status);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    
+    @GetMapping("/{id}/scorecard")
+    public ResponseEntity<ScorecardResponseDTO> getMatchScorecard(@PathVariable Integer id) {
+        ScorecardResponseDTO scorecard = matchService.getScorecard(id);
+        return ResponseEntity.ok(scorecard);
+    }
+
 
 }
