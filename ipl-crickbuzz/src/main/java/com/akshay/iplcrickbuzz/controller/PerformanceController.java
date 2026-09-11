@@ -19,8 +19,11 @@ import com.akshay.iplcrickbuzz.service.PerformanceService;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/performances")
+@Tag(name = "Performances", description = "APIs for managing player match performances")
 public class PerformanceController {
 	@Autowired
     private PerformanceService performanceService;

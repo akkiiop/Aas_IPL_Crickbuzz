@@ -11,10 +11,13 @@ import com.akshay.iplcrickbuzz.dto.LoginRequestDTO;
 import com.akshay.iplcrickbuzz.dto.RegisterRequestDTO;
 import com.akshay.iplcrickbuzz.service.AuthService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "User registration and authentication APIs")
 public class AuthController {
 
 	private final AuthService authService;

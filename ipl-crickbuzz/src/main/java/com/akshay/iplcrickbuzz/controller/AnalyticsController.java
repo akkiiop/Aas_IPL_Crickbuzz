@@ -13,8 +13,11 @@ import com.akshay.iplcrickbuzz.dto.PlayerStatsDTO;
 import com.akshay.iplcrickbuzz.dto.TeamStatsDTO;
 import com.akshay.iplcrickbuzz.service.AnalyticsService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/analytics")
+@Tag(name = "Analytics", description = "APIs for player and team statistics and comparison")
 public class AnalyticsController {
 
     @Autowired

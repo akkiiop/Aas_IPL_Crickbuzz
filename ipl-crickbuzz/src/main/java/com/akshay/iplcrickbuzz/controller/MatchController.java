@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/matches")
-@Tag(name = "Matche APIs", description = "Create, read, update, and delete matches")
+@Tag(name = "Matches", description = "Create, read, update, and delete matches")
 public class MatchController {
 	
 	private final MatchService matchService;

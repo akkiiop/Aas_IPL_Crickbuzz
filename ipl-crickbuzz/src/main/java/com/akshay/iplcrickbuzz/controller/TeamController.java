@@ -20,8 +20,11 @@ import jakarta.validation.Valid;
 
 import com.akshay.iplcrickbuzz.dto.TeamResponseDTO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/teams")
+@Tag(name = "Teams", description = "APIs for managing IPL teams and squad rosters")
 public class TeamController {
 	
 	private final TeamService teamService;
