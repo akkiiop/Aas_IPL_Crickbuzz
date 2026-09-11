@@ -13,8 +13,6 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 	List<Match> findByTeam1OrTeam2(Team team1, Team team2);
 	
 	Long countByWinner(Team winner);
-	Long countByteam1OrTeam2(Team team1, Team team2);
-
 	long countByTeam1OrTeam2(Team team, Team team2);
 
 	

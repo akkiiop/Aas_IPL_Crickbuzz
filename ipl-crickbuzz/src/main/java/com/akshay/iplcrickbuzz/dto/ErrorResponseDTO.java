@@ -9,7 +9,11 @@ public class ErrorResponseDTO {
     private String message;
     private String path;
 
-    public ErrorResponseDTO(LocalDateTime localDateTime, int i, String string, String string2, String string3) {
+    public ErrorResponseDTO(LocalDateTime localDateTime, int status, String error, String message, String path) {
+        this.timestamp = localDateTime;
+        this.status = status;
+        this.message = error + ": " + message;
+        this.path = path;
     }
 
     public ErrorResponseDTO(

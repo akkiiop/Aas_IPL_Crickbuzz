@@ -1,5 +1,4 @@
 package com.akshay.iplcrickbuzz.exception;
-import com.akshay.iplcrickbuzz.exception.MatchNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -86,15 +85,33 @@ public class GlobalExceptionHandler {
 		        MatchNotFoundException ex, 
 		        HttpServletRequest request) {
 
-		    ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+		    ErrorResponseDTO error = new ErrorResponseDTO(
 		            LocalDateTime.now(),
 		            HttpStatus.NOT_FOUND.value(),
-		            "Not Found",
 		            ex.getMessage(),
 		            request.getRequestURI()
 		    );
 
-		    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+		    return ResponseEntity
+		            .status(HttpStatus.NOT_FOUND)
+		            .body(error);
+		}
+
+		@ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+		public ResponseEntity<ErrorResponseDTO> handleAccessDenied(
+		        org.springframework.security.access.AccessDeniedException ex,
+		        HttpServletRequest request) {
+
+		    ErrorResponseDTO error = new ErrorResponseDTO(
+		            LocalDateTime.now(),
+		            HttpStatus.FORBIDDEN.value(),
+		            "Access denied: You don't have permission to perform this action",
+		            request.getRequestURI()
+		    );
+
+		    return ResponseEntity
+		            .status(HttpStatus.FORBIDDEN)
+		            .body(error);
 		}
 
 	

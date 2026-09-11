@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.akshay.iplcrickbuzz.dto.DashboardResponseDTO;
 import com.akshay.iplcrickbuzz.dto.PlayerResponseDTO;
 import com.akshay.iplcrickbuzz.entity.Player;
+import com.akshay.iplcrickbuzz.repository.MatchRepository;
+import com.akshay.iplcrickbuzz.repository.PerformanceRepository;
 import com.akshay.iplcrickbuzz.repository.PlayerRepository;
 import com.akshay.iplcrickbuzz.repository.TeamRepository;
 
