@@ -114,5 +114,39 @@ public class GlobalExceptionHandler {
 		            .body(error);
 		}
 
+		@ExceptionHandler(RuntimeException.class)
+		public ResponseEntity<ErrorResponseDTO> handleRuntimeException(
+		        RuntimeException ex,
+		        HttpServletRequest request) {
+
+		    ErrorResponseDTO error = new ErrorResponseDTO(
+		            LocalDateTime.now(),
+		            HttpStatus.BAD_REQUEST.value(),
+		            ex.getMessage(),
+		            request.getRequestURI()
+		    );
+
+		    return ResponseEntity
+		            .status(HttpStatus.BAD_REQUEST)
+		            .body(error);
+		}
+
+		@ExceptionHandler(Exception.class)
+		public ResponseEntity<ErrorResponseDTO> handleGenericException(
+		        Exception ex,
+		        HttpServletRequest request) {
+
+		    ErrorResponseDTO error = new ErrorResponseDTO(
+		            LocalDateTime.now(),
+		            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+		            "An unexpected error occurred",
+		            request.getRequestURI()
+		    );
+
+		    return ResponseEntity
+		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+		            .body(error);
+		}
+
 	
 }
